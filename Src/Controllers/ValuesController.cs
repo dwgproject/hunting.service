@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HuntingHelperWebService.ApplicationContext;
+using HuntingHelperWebService.Eventing;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace HuntingHelperWebService.Controllers
 {
@@ -12,16 +14,20 @@ namespace HuntingHelperWebService.Controllers
     public class ValuesController : ControllerBase
     {
         private IApplicationContext context;
+        private IHubContext<EventingHub> hubContext;
 
-        public ValuesController(IApplicationContext context)
+        public ValuesController(IApplicationContext context, IHubContext<EventingHub> hubContext)
         {
             this.context = context;
+            this.hubContext = hubContext;
         }
 
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<ActionResult<IEnumerable<string>>> Get()
         {
+            await hubContext.Clients.All.SendAsync("test", $"Home page loaded at: {DateTime.Now}");
+            //EventingHub.SendMessage("Invoke controller method");
             return new string[] { "value1", "value2" };
         }
 

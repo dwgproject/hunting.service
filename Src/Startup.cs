@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HuntingHelperWebService.ApplicationContext;
+using HuntingHelperWebService.Eventing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -16,6 +17,8 @@ namespace HuntingHelperWebService
 {
     public class Startup
     {
+        //public static IConnectionManager ConnectionManager;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -28,11 +31,14 @@ namespace HuntingHelperWebService
         {
             services.AddSingleton<IApplicationContext, HuntingHelperWebService.ApplicationContext.ApplicationContext>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
+            //ConnectionManager = serviceProvider.GetService<IConnectionManager>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -43,7 +49,10 @@ namespace HuntingHelperWebService
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection(); // wyłączam to bo mi na https przekierowywało i httpclient mi się nie łączył
+            app.UseSignalR((route) => {
+                route.MapHub<EventingHub>("/Events");///signalr
+            });
             app.UseMvc();
         }
     }
