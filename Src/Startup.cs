@@ -17,8 +17,6 @@ namespace HuntingHelperWebService
 {
     public class Startup
     {
-        //public static IConnectionManager ConnectionManager;
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -35,10 +33,8 @@ namespace HuntingHelperWebService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            //ConnectionManager = serviceProvider.GetService<IConnectionManager>();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -51,9 +47,14 @@ namespace HuntingHelperWebService
 
             //app.UseHttpsRedirection(); // wyłączam to bo mi na https przekierowywało i httpclient mi się nie łączył
             app.UseSignalR((route) => {
-                route.MapHub<EventingHub>("/Events");///signalr
+                route.MapHub<EventingHub>("/Events");
             });
-            app.UseMvc();
+
+            //app.UseMvc(); // wykomentowałem bo nie chcę mieć w ścieżce api/ i tak dalej
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("default", "Api/{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }

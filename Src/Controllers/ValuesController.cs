@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace HuntingHelperWebService.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    //[Route("api/[controller]")]
+    //[ApiController]
     public class ValuesController : ControllerBase
     {
         private IApplicationContext context;
@@ -26,7 +26,9 @@ namespace HuntingHelperWebService.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> Get()
         {
+            
             await hubContext.Clients.All.SendAsync("test", $"Home page loaded at: {DateTime.Now}");
+            //await hubContext.Clients.User("s").SendAsync("test", $"Home page loaded at: {DateTime.Now}"); //konkretny user
             //EventingHub.SendMessage("Invoke controller method");
             return new string[] { "value1", "value2" };
         }
