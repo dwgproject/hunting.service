@@ -1,15 +1,17 @@
 using System;
-using System.Collections;
+using System.ComponentModel.DataAnnotations;
 
-namespace HuntingHelperWebService.Model{
+namespace Hunt.Model
+{
     public class User{
         
-        public string Identifier { get; private set; }
-        public DateTime Issued { get; private set; }
-        public string Name { get; private set; }
-        public string Surname { get; private set; }
-        public string Email { get; private set; }
-        public string Password { get; private set; }
+        [Key]
+        public Guid Identifier { get; set; }
+        public DateTime Issued { get; set; }
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
 
 
         public User()

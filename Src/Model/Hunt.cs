@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace HuntingHelperWebService.Model{
+namespace Hunt.Model{
     public class Hunt{
 
         public int ID { get; set; }

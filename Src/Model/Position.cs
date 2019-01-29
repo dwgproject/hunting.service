@@ -1,4 +1,4 @@
-namespace HuntingHelperWebService.Model{
+namespace Hunt.Model{
     public class Position{
         public int X {get; private set;}
         public int y {get;private set;}

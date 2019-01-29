@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using HuntingHelperWebService.ApplicationContext;
-using HuntingHelperWebService.Eventing;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using Hunt.ServiceContext;
+using Hunt.Data;
+using Hunt.Eventing;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace HuntingHelperWebService
 {
@@ -27,9 +24,13 @@ namespace HuntingHelperWebService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IApplicationContext, HuntingHelperWebService.ApplicationContext.ApplicationContext>();
+            services.AddSingleton<IServiceContext, ServiceContext>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddSignalR();
+
+            //Configuration.GetValue<string>("ConnectionString:DefaultConnection"))
+            services.AddDbContext<HuntContext>(options =>
+                options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=hunting;Trusted_Connection=True;MultipleActiveResultSets=true"));
+            services.AddSignalR();   
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +56,36 @@ namespace HuntingHelperWebService
             {
                 routes.MapRoute("default", "Api/{controller=Home}/{action=Index}/{id?}");
             });
+
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<HuntContext>();
+                context.Database.EnsureCreated();
+            }
         }
     }
 }
+
+
+
+
+
+
+// DbInitializer.Ini
+// using (var serviceScope = app.ApplicationServices.CreateScope())
+// {
+//     HuntContext huntContext = serviceScope.ServiceProvider.GetService<HuntContext>();
+//     huntContext.Database.EnsureCreated();       
+// }
+
+
+// options=>
+//                 {
+//                     options
+//                     .InputFormatters
+//                     .Where(item=>item.GetType() == typeof(JsonInputFormatter))
+//                     .Cast<JsonInputFormatter>()
+//                     .Single()
+//                     .SupportedMediaTypes
+//                     .Add("application/x-www-form-urlencoded");
+//                 }

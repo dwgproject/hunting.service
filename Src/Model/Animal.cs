@@ -1,4 +1,4 @@
-namespace HuntingHelperWebService.Model{
+namespace Hunt.Model{
     public class Animal{
         
     }

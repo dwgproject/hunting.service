@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using HuntingHelperWebService.ApplicationContext;
-using HuntingHelperWebService.Eventing;
+using Hunt.Data;
+using Hunt.Eventing;
+using Hunt.Model;
+using Hunt.ServiceContext;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
-namespace HuntingHelperWebService.Controllers
+namespace Hunt.Controllers
 {
-    //[Route("api/[controller]")]
-    //[ApiController]
     public class ValuesController : ControllerBase
     {
-        private IApplicationContext context;
+        private IServiceContext context;
         private IHubContext<EventingHub> hubContext;
+        private HuntContext huntContext;
 
-        public ValuesController(IApplicationContext context, IHubContext<EventingHub> hubContext)
+        public ValuesController(IServiceContext context, IHubContext<EventingHub> hubContext, HuntContext huntContext)
         {
             this.context = context;
             this.hubContext = hubContext;
+            this.huntContext = huntContext;
         }
 
         // GET api/values
@@ -30,6 +31,13 @@ namespace HuntingHelperWebService.Controllers
             await hubContext.Clients.All.SendAsync("test", $"Home page loaded at: {DateTime.Now}");
             //await hubContext.Clients.User("s").SendAsync("test", $"Home page loaded at: {DateTime.Now}"); //konkretny user
             //EventingHub.SendMessage("Invoke controller method");
+            var user = new User();
+            user.Identifier = Guid.NewGuid();
+            user.Name = "Wiechu";
+
+            huntContext.Users.Add(user);
+            huntContext.SaveChanges();
+
             return new string[] { "value1", "value2" };
         }
 
@@ -59,3 +67,5 @@ namespace HuntingHelperWebService.Controllers
         }
     }
 }
+//[Route("api/[controller]")]
+//[ApiController]

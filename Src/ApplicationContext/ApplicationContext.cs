@@ -1,14 +1,13 @@
-using System;
+using Hunt.Model;
 using System.Collections.Generic;
-using System.IO;
-using HuntingHelperWebService.Model;
 
-namespace HuntingHelperWebService.ApplicationContext{
-    public class ApplicationContext : IApplicationContext{
+namespace Hunt.ServiceContext
+{
+    public class ServiceContext : IServiceContext{
 
         public IEnumerable<User> Users { get; private set; }
 
-        public ApplicationContext()
+        public ServiceContext()
         {
             
         }
