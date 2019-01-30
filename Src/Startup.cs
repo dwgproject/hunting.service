@@ -9,6 +9,7 @@ using Hunt.Data;
 using Hunt.Eventing;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Hunt.Tools;
 
 namespace HuntingHelperWebService
 {
@@ -25,7 +26,9 @@ namespace HuntingHelperWebService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IServiceContext, ServiceContext>();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => {
+                options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             //Configuration.GetValue<string>("ConnectionString:DefaultConnection"))
             services.AddDbContext<HuntContext>(options =>
@@ -55,6 +58,7 @@ namespace HuntingHelperWebService
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "Api/{controller=Home}/{action=Index}/{id?}");
+                
             });
 
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
@@ -89,3 +93,4 @@ namespace HuntingHelperWebService
 //                     .SupportedMediaTypes
 //                     .Add("application/x-www-form-urlencoded");
 //                 }
+

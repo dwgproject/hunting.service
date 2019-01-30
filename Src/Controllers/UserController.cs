@@ -1,6 +1,7 @@
 using Hunt.Data;
 using Hunt.Eventing;
 using Hunt.Model;
+using Hunt.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -19,52 +20,57 @@ namespace Hunt.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get(string identifier)
+        public JsonResult Get(string identifier)
         {
             return new JsonResult("ok");
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public JsonResult GetAll()
         {
             return new JsonResult("ok");
         }
 
+        [HttpPost]
+        public JsonResult SignUp([FromBody]User user)
+        {
+            if (user == null) return new JsonResult(new Response(false, "User is null."));            
+            if (user.Identifier != Guid.Empty){
+                User found = huntContext.Find<User>(user.Identifier);
+                return new JsonResult(new Response(false, $"User {found.Name} already exist."));
+            } 
+        
+            try
+            {
+                user.Identifier = Guid.NewGuid();
+                huntContext.Add<User>(user);
+                huntContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new Response(true, $"Problem z dodaniem user {user.Name}, {user.Identifier}, {ex.Message}"));
+            }
+
+            return new JsonResult(new Response(true, $"Dodano user {user.Name}, {user.Identifier}"));
+        }
+
         // api/User/SignIn
         [HttpPost]
-        public IActionResult SignIn(string identifier){
+        public JsonResult SignIn(string identifier){
 
 
             //huntContext.Users.Add();
             return new JsonResult("Ok");
         }
         
-        [HttpPost]
-        public IActionResult SignUp([FromBody]User user)
-        {
-            // User found = huntContext.Find<User>(user.Identifier);
-            // if (found != null)
-            //     return new JsonResult("Istnieje");
-
-            // try
-            // {
-            //     user.Identifier = Guid.NewGuid();
-            //     huntContext.Add<User>(user);
-            // }
-            // catch
-            // {
-
-            // }
-
-            return new JsonResult("Ok");
-        }
+        
         // api/User/SignOut
-        public IActionResult SignOut(){
+        public JsonResult SignOut(){
             return new JsonResult("Ok");
         }
 
         [HttpDelete]
-        public IActionResult Delete(){
+        public JsonResult Delete(){
             return new JsonResult("Ok");
         }
     }
