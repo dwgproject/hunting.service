@@ -1,12 +1,12 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+
 namespace Hunt.Model{
     public class Position{
-        public int X {get; private set;}
-        public int y {get;private set;}
-
-        public Position(int x, int y)
-        {
-            this.X = x;
-            this.y = y;
-        }
+        [Key]
+        public Guid Identifier { get; set; }
+        public User User { get; set; }
+        public double X { get; set;}
+        public double y { get; set;}
     }
 }

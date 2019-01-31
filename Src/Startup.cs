@@ -10,6 +10,7 @@ using Hunt.Eventing;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Hunt.Tools;
+using Hunt.ApplicationContext;
 
 namespace HuntingHelperWebService
 {
@@ -58,7 +59,6 @@ namespace HuntingHelperWebService
             app.UseMvc(routes =>
             {
                 routes.MapRoute("default", "Api/{controller=Home}/{action=Index}/{id?}");
-                
             });
 
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
@@ -81,16 +81,3 @@ namespace HuntingHelperWebService
 //     HuntContext huntContext = serviceScope.ServiceProvider.GetService<HuntContext>();
 //     huntContext.Database.EnsureCreated();       
 // }
-
-
-// options=>
-//                 {
-//                     options
-//                     .InputFormatters
-//                     .Where(item=>item.GetType() == typeof(JsonInputFormatter))
-//                     .Cast<JsonInputFormatter>()
-//                     .Single()
-//                     .SupportedMediaTypes
-//                     .Add("application/x-www-form-urlencoded");
-//                 }
-

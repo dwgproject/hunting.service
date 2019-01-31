@@ -2,6 +2,7 @@ using Hunt.Data;
 using Hunt.Eventing;
 using Hunt.Model;
 using Hunt.Responses;
+using Hunt.ServiceContext;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -10,18 +11,23 @@ namespace Hunt.Controllers
 {
     public class UserController : ControllerBase
     {
+        private IServiceContext serviceContext;
         private IHubContext<EventingHub> hub;
         private HuntContext huntContext;
-
-        public UserController(IHubContext<EventingHub> hub, HuntContext huntContext)
+        
+        public UserController(IHubContext<EventingHub> hub, HuntContext huntContext, IServiceContext serviceContext)
         {
+            this.serviceContext = serviceContext;
             this.huntContext = huntContext;
             this.hub = hub;
         }
 
         [HttpGet]
-        public JsonResult Get(string identifier)
+        public JsonResult Get(Guid identifier)
         {
+            if (identifier == Guid.Empty) 
+                return MessagePayloadResponse.Failure("User don't exists.");
+                       
             return new JsonResult("ok");
         }
 
@@ -34,10 +40,12 @@ namespace Hunt.Controllers
         [HttpPost]
         public JsonResult SignUp([FromBody]User user)
         {
-            if (user == null) return new JsonResult(new Response(false, "User is null."));            
+            if (user == null) 
+                return MessagePayloadResponse.Failure("User is Null.");
+
             if (user.Identifier != Guid.Empty){
                 User found = huntContext.Find<User>(user.Identifier);
-                return new JsonResult(new Response(false, $"User {found.Name} already exist."));
+                    return MessagePayloadResponse.Failure($"User {found.Name} already exist.");
             } 
         
             try
@@ -48,40 +56,47 @@ namespace Hunt.Controllers
             }
             catch (Exception ex)
             {
-                return new JsonResult(new Response(true, $"Problem z dodaniem user {user.Name}, {user.Identifier}, {ex.Message}"));
+                return MessagePayloadResponse.Failure($"Problem z dodaniem user {user.Name}, {user.Identifier}, {ex.Message}");
             }
 
-            return new JsonResult(new Response(true, $"Dodano user {user.Name}, {user.Identifier}"));
+            return MessagePayloadResponse.Success($"User {user.Identifier} has been added.");
         }
-
-        // api/User/SignIn
+        
         [HttpPost]
-        public JsonResult SignIn(string identifier){
-
-
-            //huntContext.Users.Add();
+        public JsonResult SignIn([FromBody]User user){
+            if (user == null) 
+                return MessagePayloadResponse.Failure("User is Null.");
+            
+            if (user.Identifier == Guid.Empty)
+                return MessagePayloadResponse.Failure($"User don't exist.");
+                
+            User found = huntContext.Find<User>(user.Identifier);
+            serviceContext.CreateSession(found);
+            
             return new JsonResult("Ok");
         }
         
-        
-        // api/User/SignOut
-        public JsonResult SignOut(){
+        [HttpPost]
+        public JsonResult SignOut(Guid identifier){
+            if (identifier == Guid.Empty)
+                return MessagePayloadResponse.Failure($"User don't exist.");
+                
+            User found = huntContext.Find<User>(identifier);
+            serviceContext.DestoySession(found);
             return new JsonResult("Ok");
         }
 
         [HttpDelete]
-        public JsonResult Delete(){
-            return new JsonResult("Ok");
+        public JsonResult Delete(Guid identifier){
+            if (identifier == Guid.Empty)
+                return MessagePayloadResponse.Failure($"User don't exist.");
+            try{
+                User found = huntContext.Find<User>(identifier);
+                huntContext.Remove<User>(found);
+            }catch(Exception ex){
+                return MessagePayloadResponse.Failure($"Problem z usunięciem user: {ex.Message}");
+            }
+            return MessagePayloadResponse.Success("User has been deleted");
         }
     }
 }
-
-//add // api/User/SignUp
-//log 
-//update 
-//delete
-
-//public ActionResult<IEnumerable<string>> 
-
-// [Route("api/[controller]")]
-// [ApiController] //reprezentuje api controllera

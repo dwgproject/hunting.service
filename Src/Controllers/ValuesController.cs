@@ -23,7 +23,6 @@ namespace Hunt.Controllers
             this.huntContext = huntContext;
         }
 
-        // GET api/values
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> Get()
         {
