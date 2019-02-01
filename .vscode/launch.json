@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/Src/bin/Debug/netcoreapp2.2/HuntingHelperWebService.dll",
+            "program": "${workspaceFolder}/Src/HuntService/bin/Debug/netcoreapp2.2/HuntingHelperWebService.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/Src",
+            "cwd": "${workspaceFolder}/Src/HuntService",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {
