@@ -3,6 +3,7 @@ using Hunt.Eventing;
 using Hunt.Model;
 using Hunt.Responses;
 using Hunt.ServiceContext;
+using HuntRepository.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -13,12 +14,12 @@ namespace Hunt.Controllers
     {
         private IServiceContext serviceContext;
         private IHubContext<EventingHub> hub;
-        private HuntContext huntContext;
+        private IUserRepository repository;
         
-        public UserController(IHubContext<EventingHub> hub, HuntContext huntContext, IServiceContext serviceContext)
+        public UserController(IHubContext<EventingHub> hub, IServiceContext serviceContext, IRepository repository)
         {
             this.serviceContext = serviceContext;
-            this.huntContext = huntContext;
+            this.repository = repository.UserRepository;
             this.hub = hub;
         }
 
@@ -44,21 +45,14 @@ namespace Hunt.Controllers
                 return MessagePayloadResponse.Failure("User is Null.");
 
             if (user.Identifier != Guid.Empty){
-                User found = huntContext.Find<User>(user.Identifier);
-                    return MessagePayloadResponse.Failure($"User {found.Name} already exist.");
-            } 
-        
-            try
-            {
-                user.Identifier = Guid.NewGuid();
-                huntContext.Add<User>(user);
-                huntContext.SaveChanges();
+                Result<User> result = repository.Find(user);
+                
+                    return MessagePayloadResponse.Failure($"User {result.Payload.Name} already exist.");
             }
-            catch (Exception ex)
-            {
-                return MessagePayloadResponse.Failure($"Problem z dodaniem user {user.Name}, {user.Identifier}, {ex.Message}");
-            }
-
+            
+            user.Identifier = Guid.NewGuid();
+            Result<User> result1 = repository.Add(user);
+            
             return MessagePayloadResponse.Success($"User {user.Identifier} has been added.");
         }
         
@@ -69,9 +63,7 @@ namespace Hunt.Controllers
             
             if (user.Identifier == Guid.Empty)
                 return MessagePayloadResponse.Failure($"User don't exist.");
-                
-            User found = huntContext.Find<User>(user.Identifier);
-            serviceContext.CreateSession(found);
+                       
             
             return new JsonResult("Ok");
         }
@@ -81,8 +73,7 @@ namespace Hunt.Controllers
             if (identifier == Guid.Empty)
                 return MessagePayloadResponse.Failure($"User don't exist.");
                 
-            User found = huntContext.Find<User>(identifier);
-            serviceContext.DestoySession(found);
+            
             return new JsonResult("Ok");
         }
 
@@ -90,12 +81,7 @@ namespace Hunt.Controllers
         public JsonResult Delete(Guid identifier){
             if (identifier == Guid.Empty)
                 return MessagePayloadResponse.Failure($"User don't exist.");
-            try{
-                User found = huntContext.Find<User>(identifier);
-                huntContext.Remove<User>(found);
-            }catch(Exception ex){
-                return MessagePayloadResponse.Failure($"Problem z usunięciem user: {ex.Message}");
-            }
+            
             return MessagePayloadResponse.Success("User has been deleted");
         }
     }

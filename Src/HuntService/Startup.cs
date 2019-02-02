@@ -11,6 +11,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Hunt.Tools;
 using Hunt.ApplicationContext;
+using HuntRepository.Infrastructure;
 
 namespace HuntingHelperWebService
 {
@@ -27,13 +28,10 @@ namespace HuntingHelperWebService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IServiceContext, ServiceContext>();
+            services.AddSingleton<IRepository, Repository>();
             services.AddMvc(options => {
                 options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-            //Configuration.GetValue<string>("ConnectionString:DefaultConnection"))
-            services.AddDbContext<HuntContext>(options =>
-                options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=hunting;Trusted_Connection=True;MultipleActiveResultSets=true"));
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);            
             services.AddSignalR();   
         }
 
@@ -61,16 +59,18 @@ namespace HuntingHelperWebService
                 routes.MapRoute("default", "Api/{controller=Home}/{action=Index}/{id?}");
             });
 
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetRequiredService<HuntContext>();
-                context.Database.EnsureCreated();
-            }
+            // using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            // {
+            //     var context = serviceScope.ServiceProvider.GetRequiredService<HuntContext>();
+            //     context.Database.EnsureCreated();
+            // }
         }
     }
 }
 
-
+//Configuration.GetValue<string>("ConnectionString:DefaultConnection"))
+            // services.AddDbContext<HuntContext>(options =>
+            //     options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=hunting;Trusted_Connection=True;MultipleActiveResultSets=true"));
 
 
 

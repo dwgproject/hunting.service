@@ -1,0 +1,15 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace Hunt.Model{
+
+    public class Score{
+        [Key]
+        public Guid Identifier { get; set;}
+        public User User { get; set; }
+        public Hunt Hunt { get; set; }
+        public DateTime? Issued { get; set; }
+        public Animal Animal { get; set; }
+        public int Quantity { get; set; }
+    }
+}
