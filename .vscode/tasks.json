@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Src/HuntingHelperWebService.csproj"
+                "${workspaceFolder}/Src/HuntService/HuntingHelperWebService.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
