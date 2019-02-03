@@ -3,10 +3,12 @@ using Hunt.Eventing;
 using Hunt.Model;
 using Hunt.Responses;
 using Hunt.ServiceContext;
+using HuntRepository.Extensions;
 using HuntRepository.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Collections.Generic;
 
 namespace Hunt.Controllers
 {
@@ -35,6 +37,8 @@ namespace Hunt.Controllers
         [HttpGet]
         public JsonResult GetAll()
         {
+            //example query
+            var queryResult = repository.GetUsersByDate(DateTime.Now, DateTime.Now);
             return new JsonResult("ok");
         }
 

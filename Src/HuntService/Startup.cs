@@ -58,12 +58,6 @@ namespace HuntingHelperWebService
             {
                 routes.MapRoute("default", "Api/{controller=Home}/{action=Index}/{id?}");
             });
-
-            // using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            // {
-            //     var context = serviceScope.ServiceProvider.GetRequiredService<HuntContext>();
-            //     context.Database.EnsureCreated();
-            // }
         }
     }
 }
@@ -81,3 +75,10 @@ namespace HuntingHelperWebService
 //     HuntContext huntContext = serviceScope.ServiceProvider.GetService<HuntContext>();
 //     huntContext.Database.EnsureCreated();       
 // }
+
+
+            // using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            // {
+            //     var context = serviceScope.ServiceProvider.GetRequiredService<HuntContext>();
+            //     context.Database.EnsureCreated();
+            // }

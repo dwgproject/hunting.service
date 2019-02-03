@@ -2,8 +2,7 @@ using Hunt.Model;
 
 namespace HuntRepository.Infrastructure{
 
-    public interface IUserRepository : IModuleRepository<Result<User>, User>{
+    public interface IUserRepository : IModuleRepository<User, User>{
         
-        //IEnumerable<User> Get(Query )
     }
 }

@@ -1,14 +1,13 @@
+using System;
+using System.Collections.Generic;
+
 namespace HuntRepository.Infrastructure{
     public interface IModuleRepository<TResult, TParam>{
 
-        TResult Add(TParam user);
+        Result<TResult> Add(TParam user);
         void Delete(TParam user);
         void Update(TParam user);
-        TResult Find(TParam user);
-        //IEnumerable<User> Get(Query )
-
-
+        Result<TResult> Find(TParam user);
+        Result<IEnumerable<TResult>> Query(Func<TParam, bool> query);
     }
-
-
 }
