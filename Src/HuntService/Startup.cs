@@ -10,7 +10,7 @@ using Hunt.Eventing;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Hunt.Tools;
-using Hunt.ApplicationContext;
+
 using HuntRepository.Infrastructure;
 
 namespace HuntingHelperWebService
@@ -27,7 +27,7 @@ namespace HuntingHelperWebService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IServiceContext, ServiceContext>();
+            services.AddSingleton<IServiceContext, Context>();
             services.AddSingleton<IRepository, Repository>();
             services.AddMvc(options => {
                 options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
