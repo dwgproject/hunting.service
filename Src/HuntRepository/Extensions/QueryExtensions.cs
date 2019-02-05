@@ -10,7 +10,10 @@ namespace HuntRepository.Extensions{
             
             Result<IEnumerable<User>> result = repository.Query((ux) => ux.Issued > from && ux.Issued < to);
             return result;
+        }
 
+        public static Result<IEnumerable<User>> GetUsersByAuthentication(this IUserRepository repository, string login, string password){
+            return repository.Query((ux) => ux.Login == login && ux.Password == password);
         }
     }
 }

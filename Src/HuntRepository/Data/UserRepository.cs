@@ -35,12 +35,32 @@ namespace Hunt.Data{
 
         public void Delete(User user)
         {
-         
+            HuntContext context = null;
+            try{
+                context = new HuntContext();
+                context.Users.Remove(user);
+            }catch(Exception ex){
+                
+            }finally{
+                context?.Dispose();
+            }
         }
 
         public Result<User> Find(User user)
         {
-            return new Result<User>(false, new User());
+            HuntContext context = null;
+            try{
+                context = new HuntContext();
+                var found = context.Users.Find(user.Identifier);
+                return found != null ? 
+                                new Result<User>(true, found) : 
+                                    new Result<User>(false, null);
+
+            }catch(Exception ex){
+                return new Result<User>(false, null);    
+            }finally{
+                context?.Dispose();
+            }
         }
 
         public Result<IEnumerable<User>> Query(Func<User, bool> query)

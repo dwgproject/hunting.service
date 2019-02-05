@@ -1,36 +1,58 @@
-using Hunt.Domain;
-using Hunt.Model;
+
 using Hunt.ServiceContext;
-using HuntRepository.Infrastructure;
+using Hunt.ServiceContext.Domain;
+using Hunt.ServiceContext.Exceptions;
+using Hunt.ServiceContext.Extensions;
+using Hunt.ServiceContext.Results;
+using Hunt.ServiceContext.ServiceSession;
 using System;
 using System.Collections.Generic;
+using HuntRepository.Extensions;
+using System.Linq;
 
 namespace Hunt.ServiceContext
 {
     public class Context : IServiceContext
     {
-        public Context(IRepository repository)
+        private static readonly string session_closed_message = "Session has been closed.";
+        private static readonly string user_added_message = "User has been added.";
+
+        private HuntRepository.Infrastructure.IUserRepository repository;
+        private IUserSession session;
+        public Context(HuntRepository.Infrastructure.IRepository repository)
         {
+            this.repository = repository.UserRepository;
+            this.session = new UserSession();
         }
 
         public bool CheckSession(Guid identifier)
         {
-            throw new NotImplementedException();
+            return session.Get(identifier) != null;
         }
 
-        public Domain.User SignIn()
+        public Result<User> SignIn(Authentication authentication)
         {
-            throw new NotImplementedException();
+            var result = repository.GetUsersByAuthentication(authentication.Login, authentication.Password);
+            if (!result.IsSuccess || !result.Payload.Any() || result.Payload.Count() > 1)
+                return new Result<User>(false, null);
+            var user = new User().ConverToUserService(result.Payload.Single());
+            return new Result<User>(true, user);
         }
 
-        public void SignOut(Domain.User user)
+        public Result<string> SignOut(Guid identifier)
         {
-            throw new NotImplementedException();
+            try{
+                session.Close(identifier);
+            }catch (SessionCloseException ex){
+                return new Result<string>(false, ex.GetBaseException().Message);
+            }
+            return new Result<string>(true, Context.session_closed_message);
         }
 
-        public bool SignUp(FullUser user)
+        public Result<string> SignUp(FullUser user)
         {
-            throw new NotImplementedException();
+            var result = repository.Add(user.ConverToUserRepository());
+            return new Result<string>(result.IsSuccess, result.IsSuccess ? user_added_message : "Problem.");
         }
     }
 }

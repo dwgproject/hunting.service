@@ -1,13 +1,13 @@
 using System;
-using Hunt.Domain;
-using Hunt.Model;
+using Hunt.ServiceContext.Results;
+using Hunt.ServiceContext.Domain;
 
 namespace Hunt.ServiceContext{
     public interface IServiceContext
     {
-        bool SignUp(FullUser user);
-        Domain.User SignIn();
-        void SignOut(Domain.User user);
+        Result<string> SignUp(FullUser user);//zapisz się
+        Result<User> SignIn(Authentication authentication);
+        Result<string> SignOut(Guid identifier);
         bool CheckSession(Guid identifier);
     }
 }
