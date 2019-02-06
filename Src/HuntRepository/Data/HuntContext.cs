@@ -20,6 +20,8 @@ namespace Hunt.Data
         public DbSet<Animal> Animals { get; set; }
         public DbSet<Role> Roles { get; set; }
 
-        public DbSet<Hunting> Hunting {get;set;}
+        public DbSet<Hunting> Huntings {get;set;}
+
+        public DbSet<Score> Scores {get;set;}
     }
 }

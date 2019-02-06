@@ -4,6 +4,8 @@ namespace HuntRepository.Infrastructure{
 
         IUserRepository UserRepository { get; }
         IAnimalRepository AnimalRepository {get;}
+        IHuntingRepository HuntingRepository {get;}
+        IScoreRepository ScoreRepository {get;}
 
 
     }

@@ -26,7 +26,7 @@ namespace HuntRepository.Data
                 hunting.Identifier = Guid.NewGuid();
                 hunting.Issued = DateTime.Now;
                 hunting.Status = true;
-                context.Hunting.Add(hunting);
+                context.Huntings.Add(hunting);
                 context.SaveChanges();
                 tx.Commit();
                 result = new Result<Hunting>(true, hunting);
@@ -45,7 +45,7 @@ namespace HuntRepository.Data
 
         public void Delete(Hunting hunting)
         {
-            var tmpHunting = context.Hunting.Find(hunting.Identifier);
+            var tmpHunting = context.Huntings.Find(hunting.Identifier);
             if(tmpHunting!=null){
                 IDbContextTransaction tx=null;
                 try{
@@ -72,7 +72,7 @@ namespace HuntRepository.Data
         public Result<Hunting> Finish(Hunting hunting)
         {
             var result = new Result<Hunting>(false, new Hunting());
-            var tmpHunting = context.Hunting.Find(hunting.Identifier);
+            var tmpHunting = context.Huntings.Find(hunting.Identifier);
             if(tmpHunting!=null){
                 IDbContextTransaction tx = null;
                 try{
@@ -103,7 +103,7 @@ namespace HuntRepository.Data
             var result = new Result<IEnumerable<Hunting>>(false, new List<Hunting>());
             IDbContextTransaction tx = null;
             try{
-                var resultQuery = context.Hunting.Where(ux=>query.Invoke(ux));
+                var resultQuery = context.Huntings.Where(ux=>query.Invoke(ux));
                 return new Result<IEnumerable<Hunting>>(true, resultQuery.AsEnumerable());
             }
             catch(Exception ex){
@@ -118,7 +118,7 @@ namespace HuntRepository.Data
 
         public void Update(Hunting hunting)
         {
-            var tmpHunting = context.Hunting.Find(hunting.Identifier);
+            var tmpHunting = context.Huntings.Find(hunting.Identifier);
             if(tmpHunting!=null && tmpHunting.Status!=false)
             {
                 IDbContextTransaction tx = null;
