@@ -12,5 +12,7 @@ namespace Hunt.Model{
         public bool Status {get;set;}
         public ICollection<User> Users { get; set; }
         public ICollection<Animal> Animals { get; set; }
+        //wszystkie mioty na polowanie
+        public ICollection<PartialHunting> PartialHuntings {get; set;}
     }
 }
