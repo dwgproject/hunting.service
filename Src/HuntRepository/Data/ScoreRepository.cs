@@ -13,7 +13,7 @@ namespace HuntRepository.Data
     public class ScoreRepository: IScoreRepository
     {
          private readonly HuntContext context;
-         private static readonly ILog log = LogManager.GetLogger(typeof(HuntingRepository));
+         private readonly ILog log = LogManager.GetLogger(typeof(HuntingRepository));
 
         public ScoreRepository(HuntContext _context)
         {
