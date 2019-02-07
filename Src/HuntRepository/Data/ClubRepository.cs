@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hunt.Configuration;
 using Hunt.Data;
 using Hunt.Model;
 using HuntRepository.Infrastructure;
+using log4net;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HuntRepository.Data
@@ -11,10 +13,12 @@ namespace HuntRepository.Data
     public class ClubRepository : IClubRepository
     {
         private readonly HuntContext context;
+        private static readonly ILog log = LogManager.GetLogger(typeof(ClubRepository));
 
         public ClubRepository(HuntContext _context)
         {
             context = _context;
+            LoggerConfig.ReadConfiguration();
         }
         public Result<Club> Add(Club club)
         {
@@ -27,11 +31,12 @@ namespace HuntRepository.Data
                 context.SaveChanges();
                 tx.Commit();
                 result = new Result<Club>(true, club);
+                log.Info($"Utworzono nowe koło łowieckie {club}");
                 return result;
-                //TODO: logger info
+               
             }
             catch(Exception ex){
-                //TODO: logger error
+                log.Error($"NIe udało się utworzyć koła łowieckiego {club}, {ex}");
                 return result;
             }
             finally{
@@ -50,10 +55,10 @@ namespace HuntRepository.Data
                     context.Clubs.Remove(tmpClub);
                     context.SaveChanges();
                     tx.Commit();
-                    //TODO logger info
+                    log.Info($"Usunięto koło łowieckie {club}");
                 }
                 catch(Exception ex){
-                    // TODO logger error
+                    log.Error($"Nie udało się usunac koła łowieckiego {club}, {ex}");
                 }
                 finally{
                     tx?.Dispose();
@@ -75,7 +80,7 @@ namespace HuntRepository.Data
                 return new Result<IEnumerable<Club>>(true, resultQuery.AsEnumerable());
             }
             catch(Exception ex){
-                //TODO logger error
+                log.Error($"Zapytanie nie powiodło sie {query}, {ex}");
                 return result;
             }
             finally{              
@@ -93,10 +98,10 @@ namespace HuntRepository.Data
                     tmpClub.Name = club.Name;
                     context.SaveChanges();
                     tx.Commit();
-                    //TODO logger info
+                    log.Info($"Zaktualizowano koło łowieckie {club}");
                 }
                 catch(Exception ex){
-                    //TOOD logger error
+                    log.Error($"Nie udało się zaktualizować koła łowieckiego {club}, {ex}");
                 }
                 finally{
                     tx?.Dispose();

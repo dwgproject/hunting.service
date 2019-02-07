@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hunt.Configuration;
 using Hunt.Data;
 using Hunt.Model;
 using HuntRepository.Infrastructure;
+using log4net;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HuntRepository.Data
@@ -11,10 +13,12 @@ namespace HuntRepository.Data
     public class HuntingRepository : IHuntingRepository
     {
         private readonly HuntContext context;
+        private static readonly ILog log = LogManager.GetLogger(typeof(HuntingRepository));
 
         public HuntingRepository(HuntContext _context)
         {
             context = _context;
+            LoggerConfig.ReadConfiguration();
         }
 
         public Result<Hunting> Add(Hunting hunting)
@@ -31,11 +35,11 @@ namespace HuntRepository.Data
                 context.SaveChanges();
                 tx.Commit();
                 result = new Result<Hunting>(true, hunting);
-                //TODO logger info
+                log.Info($"Dodano nowe polowanie {hunting}");
                 return result;
             }
             catch(Exception ex){
-                //TODO logger error
+                log.Error($"Nie udało sie dodać nowego polowania {hunting}, {ex}");
                 return result;
             }
             finally{
@@ -54,10 +58,10 @@ namespace HuntRepository.Data
                     context.Remove(hunting);
                     context.SaveChanges();
                     tx.Commit();
-                    //TODO logger info
+                    log.Info($"Usunięto polowanie {hunting}");
                 }
                 catch(Exception ex){
-                    //Logger error
+                    log.Error($"Nie udało się usunąc polowania {hunting}, {ex}");
                 }
                 finally{
                     tx?.Dispose();
@@ -82,11 +86,10 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     result = new Result<Hunting>(true, tmpHunting);
-                    //TODO logger info
                     return result;
                 }
                 catch(Exception ex){
-                    //TODO logger error
+                    log.Error($"Zakoczenie polowania nie powiodło się {hunting}, {ex}");
                     return result;
                 }
                 finally{
@@ -108,7 +111,7 @@ namespace HuntRepository.Data
                 return new Result<IEnumerable<Hunting>>(true, resultQuery.AsEnumerable());
             }
             catch(Exception ex){
-                //TODO logger error
+                log.Error($"Zapytanie nie powiodło się {query}, {ex}");
                 return result;
             }
             finally{
@@ -130,10 +133,10 @@ namespace HuntRepository.Data
                     tmpHunting.Animals = hunting.Animals;
                     context.SaveChanges();
                     tx.Commit();
-                    //TODO logger info
+                    log.Info($"Zaktualizowano polowanie {hunting}");
                 }
                 catch(Exception ex){
-                    //TODO logger error
+                    log.Error($"Nie udało się zaktuaizować polowania {hunting}, {ex}");
                 }
                 finally{
                     tx?.Dispose();

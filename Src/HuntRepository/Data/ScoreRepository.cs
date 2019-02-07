@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hunt.Configuration;
 using Hunt.Data;
 using Hunt.Model;
 using HuntRepository.Infrastructure;
+using log4net;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HuntRepository.Data
@@ -11,10 +13,12 @@ namespace HuntRepository.Data
     public class ScoreRepository: IScoreRepository
     {
          private readonly HuntContext context;
+         private static readonly ILog log = LogManager.GetLogger(typeof(HuntingRepository));
 
         public ScoreRepository(HuntContext _context)
         {
             context = _context;
+            LoggerConfig.ReadConfiguration();
         }
 
         public Result<Score> Add(Score score)
@@ -27,11 +31,11 @@ namespace HuntRepository.Data
                 context.SaveChanges();
                 tx.Commit();
                 result = new Result<Score>(true, score);
-                //TODO logger info
+                log.Info($"Dodano nowy rezultar {score}");
                 return result;
             }
             catch(Exception ex){
-                //TODA logger error
+                log.Error($"Nie udało się dodać nowego rezultatu {score}, {ex}");
                 return result;
             }
             finally{
@@ -47,9 +51,10 @@ namespace HuntRepository.Data
                 try{
                     tx = context.Database.BeginTransaction();
                     context.Scores.Remove(tmpScore);
+                    log.Info($"Usunięto rezultat {score}");
                 }
                 catch(Exception ex){
-                    //TODO logger error
+                    log.Error($"Nie udało się usunac rezultatu {score}, {ex}");
                 }
                 finally{
                     tx?.Dispose();
@@ -72,7 +77,7 @@ namespace HuntRepository.Data
                 return new Result<IEnumerable<Score>>(true, resultQuery.AsEnumerable());
             }
             catch(Exception ex){
-                //TODO logger error
+                log.Error($"Zapytanie nie powiodło się {query}, {ex}");
                 return result;
             }
             finally{              
@@ -92,10 +97,10 @@ namespace HuntRepository.Data
                     tmpScore.Quantity = score.Quantity;
                     context.SaveChanges();
                     tx.Commit();
-                    //TODO logger info
+                    log.Info($"Zaktualizowano rezultat {score}");
                 }
                 catch(Exception ex){
-                    //TODO logger error
+                    log.Error($"Nie udało sie zaktualizować rezultatu {score}, {ex}");
                 }
                 finally{
                     tx?.Dispose();
