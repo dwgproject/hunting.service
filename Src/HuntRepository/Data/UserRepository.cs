@@ -5,16 +5,21 @@ using Hunt.Model;
 using HuntRepository.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq;
+using log4net;
+using Hunt.Configuration;
 
 namespace Hunt.Data{
 
     public class UserRepository : IUserRepository
     {
         private readonly HuntContext context;
-
+        private static readonly ILog log = LogManager.GetLogger(typeof(UserRepository));
+ 
         public UserRepository(HuntContext _context)
         {
             context = _context;
+            LoggerConfig.ReadConfiguration();
+
         }
 
         public Result<User> Add(User user)
@@ -32,9 +37,10 @@ namespace Hunt.Data{
                     context.SaveChanges();
                     tx.Commit();
                     result = new Result<User>(true, user);
+                    log.Info($"Dodano usera: {user}");
                     return result;
                 }catch(Exception ex){
-                    //TODO: dodać loggera celem logowania błędów
+                    log.Error($"Nie udało się dodać usera:{user}, {ex}");
                     return result;
                 }finally{
                     tx?.Dispose();
@@ -58,9 +64,10 @@ namespace Hunt.Data{
                     context.Users.Remove(tmpUser);
                     context.SaveChanges();
                     tx.Commit();
+                    log.Info($"Usunięto usera: {user}");
                 }
                 catch(Exception ex){
-
+                    log.Error($"Nie udało się usunać usera: {user},{ex} ");
                 }
                 finally{
                     tx?.Dispose();
@@ -84,7 +91,7 @@ namespace Hunt.Data{
                 var resultQuery = context.Users.Where(ux => query.Invoke(ux));                
                 return new Result<IEnumerable<User>>(true, resultQuery.AsEnumerable());
             }catch(Exception ex){
-                //TODO: dodać loggera celem logowania błędów
+                log.Error($"Zapytanie nie powiodło sie {query}, {ex}");
                 return result;
             }finally{
                 tx?.Dispose();
@@ -105,9 +112,10 @@ namespace Hunt.Data{
                     tmpUser.Email = user.Email;
                     context.SaveChanges();
                     tx.Commit();
+                    log.Info($"Update usera:{user} ");
                 }
                 catch(Exception ex){
-
+                    log.Error($"Nie udało update usera:{user}, {ex}");
                 }
                 finally{
                     tx?.Dispose();

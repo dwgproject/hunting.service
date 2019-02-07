@@ -19,6 +19,7 @@ namespace HuntRepository.Data
 
         public Result<Hunting> Add(Hunting hunting)
         {
+
             var result = new Result<Hunting>(false, new Hunting());
             IDbContextTransaction tx = null;   
             try{
