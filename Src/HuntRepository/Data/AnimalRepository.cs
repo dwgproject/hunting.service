@@ -46,9 +46,9 @@ namespace HuntRepository.Data
             }           
         }
 
-        public void Delete(Animal animal)
+        public void Delete(Guid identifier)
         {
-            var tmpAnimal = context.Animals.Find(animal.Identifier);
+            var tmpAnimal = context.Animals.Find(identifier);
 
             if(tmpAnimal!=null){
                 IDbContextTransaction tx = null;
@@ -57,10 +57,10 @@ namespace HuntRepository.Data
                     context.Animals.Remove(tmpAnimal);
                     context.SaveChanges();
                     tx.Commit();
-                    log.Info($"Usunięto zwierzyne: {animal}");
+                    log.Info($"Usunięto zwierzyne: {identifier}");
                 }
                 catch(Exception ex){
-                    log.Error($"Nie udało usunac się zwierzyny {animal}, {ex}");
+                    log.Error($"Nie udało usunac się zwierzyny {identifier}, {ex}");
                 }
                 finally{
                     tx?.Dispose();
@@ -68,7 +68,7 @@ namespace HuntRepository.Data
             }
         }
 
-        public Result<Animal> Find(Animal animal)
+        public Result<Animal> Find(Guid identifier)
         {
             throw new NotImplementedException();
         }

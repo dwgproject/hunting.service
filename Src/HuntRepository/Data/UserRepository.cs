@@ -53,9 +53,9 @@ namespace Hunt.Data{
             
         }
 
-        public void Delete(User user)
+        public void Delete(Guid identidier)
         {
-            var tmpUser = context.Users.Find(user.Identifier);
+            var tmpUser = context.Users.Find(identidier);
             if(tmpUser!=null)
             {
                 IDbContextTransaction tx = null;
@@ -64,10 +64,10 @@ namespace Hunt.Data{
                     context.Users.Remove(tmpUser);
                     context.SaveChanges();
                     tx.Commit();
-                    log.Info($"Usunięto usera: {user}");
+                    log.Info($"Usunięto usera: {identidier}");
                 }
                 catch(Exception ex){
-                    log.Error($"Nie udało się usunać usera: {user},{ex} ");
+                    log.Error($"Nie udało się usunać usera: {identidier},{ex} ");
                 }
                 finally{
                     tx?.Dispose();
@@ -76,7 +76,7 @@ namespace Hunt.Data{
             }
         }
 
-        public Result<User> Find(User user)
+        public Result<User> Find(Guid identidier)
         {
             return new Result<User>(false, new User());
         }

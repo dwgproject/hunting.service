@@ -48,20 +48,20 @@ namespace HuntRepository.Data
             
         }
 
-        public void Delete(Hunting hunting)
+        public void Delete(Guid identifier)
         {
-            var tmpHunting = context.Huntings.Find(hunting.Identifier);
+            var tmpHunting = context.Huntings.Find(identifier);
             if(tmpHunting!=null){
                 IDbContextTransaction tx=null;
                 try{
                     tx = context.Database.BeginTransaction();
-                    context.Remove(hunting);
+                    context.Remove(tmpHunting);
                     context.SaveChanges();
                     tx.Commit();
-                    log.Info($"Usunięto polowanie {hunting}");
+                    log.Info($"Usunięto polowanie {identifier}");
                 }
                 catch(Exception ex){
-                    log.Error($"Nie udało się usunąc polowania {hunting}, {ex}");
+                    log.Error($"Nie udało się usunąc polowania {identifier}, {ex}");
                 }
                 finally{
                     tx?.Dispose();
@@ -69,7 +69,7 @@ namespace HuntRepository.Data
             }
         }
 
-        public Result<Hunting> Find(Hunting user)
+        public Result<Hunting> Find(Guid identifier)
         {
             throw new NotImplementedException();
         }

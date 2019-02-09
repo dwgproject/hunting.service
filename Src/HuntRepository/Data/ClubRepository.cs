@@ -44,9 +44,9 @@ namespace HuntRepository.Data
             }           
         }
 
-        public void Delete(Club club)
+        public void Delete(Guid identifier)
         {
-            var tmpClub = context.Clubs.Find(club.Identifier);
+            var tmpClub = context.Clubs.Find(identifier);
 
             if(tmpClub!=null){
                 IDbContextTransaction tx = null;
@@ -55,10 +55,10 @@ namespace HuntRepository.Data
                     context.Clubs.Remove(tmpClub);
                     context.SaveChanges();
                     tx.Commit();
-                    log.Info($"Usunięto koło łowieckie {club}");
+                    log.Info($"Usunięto koło łowieckie {identifier}");
                 }
                 catch(Exception ex){
-                    log.Error($"Nie udało się usunac koła łowieckiego {club}, {ex}");
+                    log.Error($"Nie udało się usunac koła łowieckiego {identifier}, {ex}");
                 }
                 finally{
                     tx?.Dispose();
@@ -66,7 +66,7 @@ namespace HuntRepository.Data
             }
         }
 
-        public Result<Club> Find(Club club)
+        public Result<Club> Find(Guid identifier)
         {
             throw new NotImplementedException();
         }

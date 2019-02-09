@@ -8,6 +8,7 @@ namespace Hunt.Model{
         [Key]
         public Guid Identifier { get; set; }
         public DateTime Issued { get; set; }
+        public Guid LeaderId {get;set;}
         public User Leader { get; set; }
         public bool Status {get;set;}
         public ICollection<User> Users { get; set; }

@@ -49,7 +49,7 @@ namespace Hunt.Controllers
                 return MessagePayloadResponse.Failure("User is Null.");
 
             if (user.Identifier != Guid.Empty){
-                Result<User> result = repository.Find(user);
+                Result<User> result = repository.Find(user.Identifier);
                 
                     return MessagePayloadResponse.Failure($"User {result.Payload.Name} already exist.");
             }

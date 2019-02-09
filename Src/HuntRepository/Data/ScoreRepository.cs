@@ -43,18 +43,18 @@ namespace HuntRepository.Data
             }
         }
 
-        public void Delete(Score score)
+        public void Delete(Guid identifier)
         {
-            var tmpScore = context.Scores.Find(score.Identifier);
+            var tmpScore = context.Scores.Find(identifier);
             if(tmpScore!=null){
                 IDbContextTransaction tx = null;
                 try{
                     tx = context.Database.BeginTransaction();
                     context.Scores.Remove(tmpScore);
-                    log.Info($"Usunięto rezultat {score}");
+                    log.Info($"Usunięto rezultat {identifier}");
                 }
                 catch(Exception ex){
-                    log.Error($"Nie udało się usunac rezultatu {score}, {ex}");
+                    log.Error($"Nie udało się usunac rezultatu {identifier}, {ex}");
                 }
                 finally{
                     tx?.Dispose();
@@ -63,7 +63,7 @@ namespace HuntRepository.Data
 
         }
 
-        public Result<Score> Find(Score user)
+        public Result<Score> Find(Guid identifier)
         {
             throw new NotImplementedException();
         }
