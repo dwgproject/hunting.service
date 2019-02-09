@@ -81,7 +81,7 @@ namespace Hunt.Data{
             HuntContext context = null;
             try{
                 context = new HuntContext();
-                var found = context.Users.Find(user.Identifier);
+                var found = context.Users.Find(identidier);
                 return found != null ? 
                                 new Result<User>(true, found) : 
                                     new Result<User>(false, null);
