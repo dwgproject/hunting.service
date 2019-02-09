@@ -4,10 +4,15 @@ namespace Hunt.Data{
     public class Repository : IRepository
     {
         public IUserRepository UserRepository { get; private set; }
+        public IAnimalRepository AnimalRepository {get; private set;}
 
-        public Repository()
+        public IHuntingRepository HuntingRepository {get; private set;}
+        public IScoreRepository ScoreRepository {get; private set;}
+
+        public Repository(IUserRepository _repository)
         {
-            UserRepository = new UserRepository();
+            //UserRepository = new UserRepository();
+            UserRepository = _repository;
         }
 
 

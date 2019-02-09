@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 
 namespace HuntRepository.Infrastructure{
-    public interface IModuleRepository<TResult, TParam>{
+    public interface IModuleRepository<TResult, TModelParam, TIdentifierParam>{
 
-        Result<TResult> Add(TParam user);
-        void Delete(TParam user);
-        void Update(TParam user);
-        Result<TResult> Find(TParam user);
-        Result<IEnumerable<TResult>> Query(Func<TParam, bool> query);
+        Result<TResult> Add(TModelParam user);
+        void Delete(TIdentifierParam identifier);
+        void Update(TModelParam user);
+        Result<TResult> Find(TIdentifierParam identifier);
+        Result<IEnumerable<TResult>> Query(Func<TModelParam, bool> query);
     }
 }
