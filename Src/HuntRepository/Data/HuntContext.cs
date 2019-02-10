@@ -7,7 +7,7 @@ namespace Hunt.Data
 
         private string password = "";
         private string user = "";
-        public HuntContext() 
+        public HuntContext(DbContextOptions<HuntContext> options):base(options) 
         {
             
         }
@@ -20,7 +20,7 @@ namespace Hunt.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Hunting>().HasOne(i=>i.Leader).WithOne();
+            //modelBuilder.Entity<Hunting>().HasOne(i=>i.Leader).WithOne();
         } 
 
         public DbSet<User> Users { get; set; }

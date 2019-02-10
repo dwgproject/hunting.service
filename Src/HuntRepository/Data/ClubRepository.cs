@@ -15,9 +15,9 @@ namespace HuntRepository.Data
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(ClubRepository));
 
-        public ClubRepository(HuntContext _context)
+        public ClubRepository(HuntContext context)
         {
-            context = _context;
+            this.context = context;
             LoggerConfig.ReadConfiguration();
         }
         public Result<Club> Add(Club club)

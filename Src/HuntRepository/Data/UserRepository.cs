@@ -15,9 +15,9 @@ namespace Hunt.Data{
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(UserRepository));
  
-        public UserRepository(HuntContext _context)
+        public UserRepository(HuntContext context)
         {
-            context = _context;
+            this.context = context;
             LoggerConfig.ReadConfiguration();
 
         }
@@ -80,7 +80,7 @@ namespace Hunt.Data{
         {
             HuntContext context = null;
             try{
-                context = new HuntContext();
+                //context = new HuntContext();
                 var found = context.Users.Find(identidier);
                 return found != null ? 
                                 new Result<User>(true, found) : 

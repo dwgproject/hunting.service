@@ -15,9 +15,9 @@ namespace HuntRepository.Data
          private readonly HuntContext context;
          private readonly ILog log = LogManager.GetLogger(typeof(HuntingRepository));
 
-        public ScoreRepository(HuntContext _context)
+        public ScoreRepository(HuntContext context)
         {
-            context = _context;
+            this.context = context;
             LoggerConfig.ReadConfiguration();
         }
 

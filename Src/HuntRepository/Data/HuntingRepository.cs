@@ -15,9 +15,9 @@ namespace HuntRepository.Data
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(HuntingRepository));
 
-        public HuntingRepository(HuntContext _context)
+        public HuntingRepository(HuntContext context)
         {
-            context = _context;
+            this.context = context;
             LoggerConfig.ReadConfiguration();
         }
 
@@ -129,8 +129,6 @@ namespace HuntRepository.Data
                 try{
                     tx = context.Database.BeginTransaction();
                     tmpHunting.Leader = hunting.Leader;
-                    tmpHunting.Users = hunting.Users;
-                    tmpHunting.Animals = hunting.Animals;
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano polowanie {hunting}");
