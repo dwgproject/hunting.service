@@ -56,4 +56,3 @@ namespace Hunt.ServiceContext
         }
     }
 }
-//GetUsersByAuthentication(authentication.Login, authentication.Password);

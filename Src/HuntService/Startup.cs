@@ -29,6 +29,7 @@ namespace HuntingHelperWebService
         {
             services.AddSingleton<IServiceContext, Context>();
             services.AddSingleton<IRepository, Repository>();
+            services.AddSingleton<IConfigurationService, ConfigurationService>();
             services.AddMvc(options => {
                 options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);            
