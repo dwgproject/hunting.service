@@ -32,10 +32,10 @@ namespace Hunt.ServiceContext
 
         public Result<User> SignIn(Authentication authentication)
         {
-            var result = repository.GetUsersByAuthentication(authentication.Login, authentication.Password);
-            if (!result.IsSuccess || !result.Payload.Any() || result.Payload.Count() > 1)
+            var result = repository.GetUserByAuthetication(authentication.Login, authentication.Password);            
+            if (!result.IsSuccess)
                 return new Result<User>(false, null);
-            var user = new User().ConverToUserService(result.Payload.Single());
+            var user = new User().ConverToUserService(result.Payload);
             return new Result<User>(true, user);
         }
 

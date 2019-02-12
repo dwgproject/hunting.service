@@ -70,7 +70,20 @@ namespace HuntRepository.Data
 
         public Result<Role> Find(Guid identifier)
         {
-            throw new NotImplementedException();
+
+            HuntContext context = null;
+            try{
+                var found = context.Roles.Find(identifier);
+                return found != null ? 
+                                new Result<Role>(true, found) : 
+                                    new Result<Role>(false, null);
+
+            }catch(Exception ex){
+                return new Result<Role>(false, null);    
+            }finally{
+                context?.Dispose();
+            }
+
         }
 
         public Result<IEnumerable<Role>> Query(Func<Role, bool> query)
