@@ -118,10 +118,11 @@ namespace Hunt.Data{
                 IDbContextTransaction tx = null;
                 try{
                     tx = context.Database.BeginTransaction();
-                    tmpUser.Name=user.Name;
-                    tmpUser.Surname = user.Surname;
-                    tmpUser.Password = user.Password;
-                    tmpUser.Email = user.Email;
+                    tmpUser.Login = user.Login ?? tmpUser.Login;
+                    tmpUser.Name=user.Name ?? tmpUser.Name;
+                    tmpUser.Surname = user.Surname ?? tmpUser.Surname;
+                    tmpUser.Password = user.Password ?? tmpUser.Password;
+                    tmpUser.Email = user.Email ?? tmpUser.Email;
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Update usera:{user} ");
