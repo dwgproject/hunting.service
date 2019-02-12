@@ -33,6 +33,7 @@ namespace Hunt.Data{
                     tx = context.Database.BeginTransaction();
                     user.Identifier = Guid.NewGuid();
                     user.Issued = DateTime.Now;
+                    user.Role = context.Roles.FirstOrDefault(r=>r.Identifier == user.Role.Identifier);
                     context.Users.Add(user);
                     context.SaveChanges();
                     tx.Commit();
@@ -44,7 +45,6 @@ namespace Hunt.Data{
                     return result;
                 }finally{
                     tx?.Dispose();
-                    context?.Dispose();
                 }
             }
             else{
@@ -71,7 +71,7 @@ namespace Hunt.Data{
                 }
                 finally{
                     tx?.Dispose();
-                    context?.Dispose();
+
                 }
             }
         }
@@ -89,7 +89,7 @@ namespace Hunt.Data{
             }catch(Exception ex){
                 return new Result<User>(false, null);    
             }finally{
-                context?.Dispose();
+
             }
         }
 
@@ -107,7 +107,7 @@ namespace Hunt.Data{
                 return result;
             }finally{
                 tx?.Dispose();
-                context?.Dispose();
+
             }
         }
 
@@ -131,7 +131,7 @@ namespace Hunt.Data{
                 }
                 finally{
                     tx?.Dispose();
-                    context?.Dispose();
+
                 }
             }
         }
