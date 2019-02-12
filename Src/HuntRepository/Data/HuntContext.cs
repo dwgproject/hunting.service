@@ -20,7 +20,7 @@ namespace Hunt.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<Hunting>().HasOne(i=>i.Leader).WithOne();
+            modelBuilder.Entity<User>().HasOne(i=>i.Role).WithMany().OnDelete(DeleteBehavior.Restrict);
         } 
 
         public DbSet<User> Users { get; set; }

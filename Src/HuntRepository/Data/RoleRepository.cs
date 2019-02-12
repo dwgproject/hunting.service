@@ -70,6 +70,7 @@ namespace HuntRepository.Data
 
         public Result<Role> Find(Guid identifier)
         {
+
             HuntContext context = null;
             try{
                 var found = context.Roles.Find(identifier);
@@ -82,6 +83,7 @@ namespace HuntRepository.Data
             }finally{
                 context?.Dispose();
             }
+
         }
 
         public Result<IEnumerable<Role>> Query(Func<Role, bool> query)
