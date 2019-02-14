@@ -1,2 +1,4 @@
 Debug/
 obj/
+Migrations/
+*.json

@@ -14,8 +14,9 @@ namespace Hunt.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString=$"Data Source=mssql6.webio.pl,2401;Initial Catalog=patrykapriasz_jaegerPrime;User ID={user};Password={password}";
-            optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=hunting;Trusted_Connection=True;MultipleActiveResultSets=true");            
+            //Data Source=msi\DataBaseName;Initial Catalog=Super25;Integrated Security=True;
+            //var connectionString= @"Data Source=localhost\SQLEXPRESS;Initial Catalog=hunting;Integrated Security=True";
+            //optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=hunting;Trusted_Connection=True;MultipleActiveResultSets=true");            
         }  
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
