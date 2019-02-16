@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq;
 using log4net;
 using Hunt.Configuration;
+using HuntRepository.Data;
 
 namespace Hunt.Data{
 
@@ -14,12 +15,13 @@ namespace Hunt.Data{
     {
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(UserRepository));
+        private readonly IHunterRepository hunterRepository;
  
         public UserRepository(HuntContext context)
         {
             this.context = context;
             LoggerConfig.ReadConfiguration();
-
+            hunterRepository = new HunterRepository(context);
         }
 
         public Result<User> Add(User user)
@@ -28,7 +30,7 @@ namespace Hunt.Data{
             //HuntContext context = null;
             IDbContextTransaction tx = null;
             if(!context.Users.Any(i=>i.Email == user.Email)){
-                    try{
+                try{
                 //context = new HuntContext();
                     tx = context.Database.BeginTransaction();
                     user.Identifier = Guid.NewGuid();
@@ -44,7 +46,6 @@ namespace Hunt.Data{
                     return result;
                 }finally{
                     tx?.Dispose();
-                    context?.Dispose();
                 }
             }
             else{
@@ -71,7 +72,6 @@ namespace Hunt.Data{
                 }
                 finally{
                     tx?.Dispose();
-                    context?.Dispose();
                 }
             }
         }
@@ -89,7 +89,6 @@ namespace Hunt.Data{
             }catch(Exception ex){
                 return new Result<User>(false, null);    
             }finally{
-                context?.Dispose();
             }
         }
 
@@ -107,7 +106,6 @@ namespace Hunt.Data{
                 return result;
             }finally{
                 tx?.Dispose();
-                context?.Dispose();
             }
         }
 
@@ -131,7 +129,6 @@ namespace Hunt.Data{
                 }
                 finally{
                     tx?.Dispose();
-                    context?.Dispose();
                 }
             }
         }

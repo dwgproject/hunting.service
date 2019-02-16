@@ -28,5 +28,6 @@ namespace Hunt.Data
         public DbSet<Hunting> Huntings {get;set;}
 
         public DbSet<Score> Scores {get;set;}
+        public DbSet<Hunter> Hunters {get;set;}
     }
 }
