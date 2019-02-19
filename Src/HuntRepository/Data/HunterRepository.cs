@@ -6,6 +6,7 @@ using Hunt.Data;
 using Hunt.Model;
 using HuntRepository.Infrastructure;
 using log4net;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HuntRepository.Data
@@ -55,10 +56,10 @@ namespace HuntRepository.Data
                     context.Hunters.Remove(tmpHunter);
                     context.SaveChanges();
                     tx.Commit();
-                    log.Info($"Usunięto usera: {tmp}");
+                    log.Info($"Usunięto huntera: {tmp}");
                 }
                 catch(Exception ex){
-                    log.Error($"Nie udało się usunać usera: {tmp},{ex} ");
+                    log.Error($"Nie udało się usunać huntera: {tmp},{ex} ");
                 }
                 finally{
                     tx?.Dispose();
@@ -71,12 +72,31 @@ namespace HuntRepository.Data
             throw new NotImplementedException();
         }
 
-        public Result<IEnumerable<Hunter>> Query(Func<User, bool> query)
+
+        public Result<IEnumerable<Hunter>> QueryHunter(Func<Hunter, bool> query)
         {
-            throw new NotImplementedException();
+            var result = new Result<IEnumerable<Hunter>>(false, new List<Hunter>());
+            IDbContextTransaction tx = null;
+            try{
+                tx= context.Database.BeginTransaction();
+                var resultQuery = context.Hunters.Include("User").Where(ux=>query.Invoke(ux));
+                return new Result<IEnumerable<Hunter>>(true, resultQuery.AsEnumerable());
+            }
+            catch(Exception ex){
+                log.Error($"Zapytanie nie powiodło się {ex}");
+                return result;
+            }
+            finally{
+                tx?.Dispose();
+            }
         }
 
         public void Update(User user)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public Result<IEnumerable<Hunter>> Query(Func<User, bool> query)
         {
             throw new NotImplementedException();
         }

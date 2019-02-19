@@ -8,6 +8,7 @@ using System.Linq;
 using log4net;
 using Hunt.Configuration;
 using HuntRepository.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hunt.Data{
 
@@ -99,7 +100,7 @@ namespace Hunt.Data{
             IDbContextTransaction tx = null;
             try{
                 //context = new HuntContext();
-                var resultQuery = context.Users.Where(ux => query.Invoke(ux));                
+                var resultQuery = context.Users.Include("Role").Where(ux => query.Invoke(ux));                
                 return new Result<IEnumerable<User>>(true, resultQuery.AsEnumerable());
             }catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło sie {query}, {ex}");
