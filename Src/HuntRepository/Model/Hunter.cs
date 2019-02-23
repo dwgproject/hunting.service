@@ -1,13 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Hunt.Model;
 
 namespace Hunt.Model
 {
-    public class Hunter
+    public class Hunter: User
     {
-        [Key]
-        public Guid Identifier { get; set; }
-        public User User { get; set; }        
+        public virtual ICollection<HunterHunting> Huntings { get; set; }         
     }
 }

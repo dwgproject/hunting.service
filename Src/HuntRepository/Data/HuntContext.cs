@@ -17,7 +17,11 @@ namespace Hunt.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<Hunting>().HasOne(i=>i.Leader).WithOne();
+            modelBuilder.Entity<HunterHunting>().HasKey(hh => new { hh.HunterId, hh.HuntingId });
+            modelBuilder.Entity<HunterHunting>().HasOne(h => h.Hunter).WithMany(s=>s.Huntings).HasForeignKey(k=>k.HunterId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<HunterHunting>().HasOne(h => h.Hunting).WithMany(s=>s.Hunters).HasForeignKey(k => k.HuntingId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Hunter>().HasBaseType<User>();
+            modelBuilder.Entity<User>().HasOne(r => r.Role).WithMany().OnDelete(DeleteBehavior.Restrict);
         } 
 
         public DbSet<User> Users { get; set; }
