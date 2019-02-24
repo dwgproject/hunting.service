@@ -14,7 +14,7 @@ namespace Hunt.Model{
         [ForeignKey("UserIdentifier")]
         public User Leader { get; set; }
         public bool Status {get;set;}
-        public ICollection<HunterHunting> Hunters { get; set; }
+        public ICollection<UserHunting> Users { get; set; }
         public ICollection<Animal> Animals { get; set; }
         //wszystkie mioty na polowanie
         public ICollection<PartialHunting> PartialHuntings {get; set;}

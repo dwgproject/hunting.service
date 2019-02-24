@@ -26,18 +26,12 @@ namespace HuntRepository.Data
 
             var result = new Result<Hunting>(false, new Hunting());
             IDbContextTransaction tx = null;   
-            List<Hunter> tmpHunters = new List<Hunter>();
             try{
                 tx = context.Database.BeginTransaction();
                 hunting.Identifier = Guid.NewGuid();
                 hunting.Issued = DateTime.Now;
                 hunting.Leader = context.Users.FirstOrDefault(x=>x.Identifier == hunting.Leader.Identifier);
                 hunting.Status = true;
-                // foreach(var hunter in hunting.Hunters){
-                //     var tmp = context.Hunters.FirstOrDefault(x=>x.Identifier == hunter.Identifier);
-                //     tmpHunters.Add(tmp);
-                // }
-                // hunting.Hunters = tmpHunters;
                 context.Huntings.Add(hunting);
                 context.SaveChanges();
                 tx.Commit();

@@ -16,13 +16,13 @@ namespace Hunt.Data{
     {
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(UserRepository));
-        private readonly IHunterRepository hunterRepository;
+
  
         public UserRepository(HuntContext context)
         {
             this.context = context;
             LoggerConfig.ReadConfiguration();
-            hunterRepository = new HunterRepository(context);
+
         }
 
         public Result<User> Add(User user)
@@ -36,6 +36,7 @@ namespace Hunt.Data{
                     tx = context.Database.BeginTransaction();
                     user.Identifier = Guid.NewGuid();
                     user.Issued = DateTime.Now;
+                    user.Role = context.Roles.FirstOrDefault(r=>r.Identifier == user.Role.Identifier);
                     context.Users.Add(user);
                     context.SaveChanges();
                     tx.Commit();

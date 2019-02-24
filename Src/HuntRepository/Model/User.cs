@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Hunt.Model
@@ -21,5 +22,6 @@ namespace Hunt.Model
         [MinLength(8)]
         public string Password { get; set; }
         public Role Role { get; set; }
+        public ICollection<UserHunting> Huntings { get; set; }
     }
 }

@@ -17,10 +17,9 @@ namespace Hunt.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<HunterHunting>().HasKey(hh => new { hh.HunterId, hh.HuntingId });
-            modelBuilder.Entity<HunterHunting>().HasOne(h => h.Hunter).WithMany(s=>s.Huntings).HasForeignKey(k=>k.HunterId).OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<HunterHunting>().HasOne(h => h.Hunting).WithMany(s=>s.Hunters).HasForeignKey(k => k.HuntingId).OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<Hunter>().HasBaseType<User>();
+            modelBuilder.Entity<UserHunting>().HasKey(hh => new { hh.UserId, hh.HuntingId });
+            modelBuilder.Entity<UserHunting>().HasOne(h => h.User).WithMany(s=>s.Huntings).HasForeignKey(k=>k.UserId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<UserHunting>().HasOne(h => h.Hunting).WithMany(s=>s.Users).HasForeignKey(k => k.HuntingId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<User>().HasOne(r => r.Role).WithMany().OnDelete(DeleteBehavior.Restrict);
         } 
 
@@ -32,6 +31,5 @@ namespace Hunt.Data
         public DbSet<Hunting> Huntings {get;set;}
 
         public DbSet<Score> Scores {get;set;}
-        public DbSet<Hunter> Hunters {get;set;}
     }
 }
