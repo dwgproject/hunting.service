@@ -5,8 +5,6 @@ namespace Hunt.Data
 {
     public class HuntContext : DbContext{
 
-        private string password = "";
-        private string user = "";
         public HuntContext(DbContextOptions<HuntContext> options):base(options) 
         {
             
@@ -14,14 +12,15 @@ namespace Hunt.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //Data Source=msi\DataBaseName;Initial Catalog=Super25;Integrated Security=True;
-            //var connectionString= @"Data Source=localhost\SQLEXPRESS;Initial Catalog=hunting;Integrated Security=True";
-            //optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=hunting;Trusted_Connection=True;MultipleActiveResultSets=true");            
+            
         }  
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>().HasOne(i=>i.Role).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<UserHunting>().HasKey(hh => new { hh.UserId, hh.HuntingId });
+            modelBuilder.Entity<UserHunting>().HasOne(h => h.User).WithMany(s=>s.Huntings).HasForeignKey(k=>k.UserId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<UserHunting>().HasOne(h => h.Hunting).WithMany(s=>s.Users).HasForeignKey(k => k.HuntingId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<User>().HasOne(r => r.Role).WithMany().OnDelete(DeleteBehavior.Restrict);
         } 
 
         public DbSet<User> Users { get; set; }

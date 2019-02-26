@@ -7,6 +7,7 @@ namespace Hunt.Model{
     {
         [Key]
         public Guid Identifier { get; set; } 
+        [Required]
         public string Name { get; set; }
     }
 }

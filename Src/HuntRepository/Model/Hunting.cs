@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Hunt.Model;
 
 namespace Hunt.Model{
     public class Hunting{
@@ -13,9 +14,9 @@ namespace Hunt.Model{
         [ForeignKey("UserIdentifier")]
         public User Leader { get; set; }
         public bool Status {get;set;}
-        // public ICollection<User> Users { get; set; }
-        // public ICollection<Animal> Animals { get; set; }
-        // //wszystkie mioty na polowanie
-        // public ICollection<PartialHunting> PartialHuntings {get; set;}
+        public ICollection<UserHunting> Users { get; set; }
+        public ICollection<Animal> Animals { get; set; }
+        //wszystkie mioty na polowanie
+        public ICollection<PartialHunting> PartialHuntings {get; set;}
     }
 }

@@ -30,6 +30,7 @@ namespace HuntRepository.Data
                 tx = context.Database.BeginTransaction();
                 hunting.Identifier = Guid.NewGuid();
                 hunting.Issued = DateTime.Now;
+                hunting.Leader = context.Users.FirstOrDefault(x=>x.Identifier == hunting.Leader.Identifier);
                 hunting.Status = true;
                 context.Huntings.Add(hunting);
                 context.SaveChanges();

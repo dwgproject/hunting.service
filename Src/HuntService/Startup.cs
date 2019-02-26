@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Hunt.Tools;
 
 using HuntRepository.Infrastructure;
+using HuntRepository.Data;
 
 namespace HuntingHelperWebService
 {
@@ -28,9 +29,10 @@ namespace HuntingHelperWebService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<HuntContext>(options => options.UseSqlServer(Configuration.GetValue<string>("ConnectionString:DefaultConnection")));
-            services.AddSingleton<IServiceContext, Context>();
-            services.AddSingleton<IRepository, Repository>();
-            services.AddSingleton<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IServiceContext, Context>();
+            services.AddTransient<IRepository, Repository>();
+            services.AddTransient<IRoleRepository, RoleRepository>();
+            services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddMvc(options => {
                 options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);            
