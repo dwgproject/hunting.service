@@ -2,3 +2,5 @@ Debug/
 obj/
 Migrations/
 *.json
+.vs
+.vscode
