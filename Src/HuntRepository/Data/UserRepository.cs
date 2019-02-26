@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq;
 using log4net;
 using Hunt.Configuration;
+using HuntRepository.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hunt.Data{
 
@@ -14,6 +16,7 @@ namespace Hunt.Data{
     {
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(UserRepository));
+
  
         public UserRepository(HuntContext context)
         {
@@ -28,7 +31,7 @@ namespace Hunt.Data{
             //HuntContext context = null;
             IDbContextTransaction tx = null;
             if(!context.Users.Any(i=>i.Email == user.Email)){
-                    try{
+                try{
                 //context = new HuntContext();
                     tx = context.Database.BeginTransaction();
                     user.Identifier = Guid.NewGuid();
@@ -71,17 +74,17 @@ namespace Hunt.Data{
                 }
                 finally{
                     tx?.Dispose();
-
                 }
             }
         }
 
-        public Result<User> Find(Guid identidier)
+        public Result<User> Find(Guid identifier)
         {
             HuntContext context = null;
             try{
                 //context = new HuntContext();
-                var found = context.Users.Find(identidier);
+                //var found = context.Users.Find(identifier);
+                var found = context.Users.Include(h=>h.Huntings).FirstOrDefault(i=>i.Identifier == identifier);
                 return found != null ? 
                                 new Result<User>(true, found) : 
                                     new Result<User>(false, null);
@@ -89,7 +92,6 @@ namespace Hunt.Data{
             }catch(Exception ex){
                 return new Result<User>(false, null);    
             }finally{
-
             }
         }
 
@@ -100,14 +102,13 @@ namespace Hunt.Data{
             IDbContextTransaction tx = null;
             try{
                 //context = new HuntContext();
-                var resultQuery = context.Users.Where(ux => query.Invoke(ux));                
+                var resultQuery = context.Users.Include("Role").Where(ux => query.Invoke(ux));                
                 return new Result<IEnumerable<User>>(true, resultQuery.AsEnumerable());
             }catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło sie {query}, {ex}");
                 return result;
             }finally{
                 tx?.Dispose();
-
             }
         }
 
@@ -132,7 +133,6 @@ namespace Hunt.Data{
                 }
                 finally{
                     tx?.Dispose();
-
                 }
             }
         }
