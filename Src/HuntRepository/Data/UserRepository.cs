@@ -78,12 +78,13 @@ namespace Hunt.Data{
             }
         }
 
-        public Result<User> Find(Guid identidier)
+        public Result<User> Find(Guid identifier)
         {
             HuntContext context = null;
             try{
                 //context = new HuntContext();
-                var found = context.Users.Find(identidier);
+                //var found = context.Users.Find(identifier);
+                var found = context.Users.Include(h=>h.Huntings).FirstOrDefault(i=>i.Identifier == identifier);
                 return found != null ? 
                                 new Result<User>(true, found) : 
                                     new Result<User>(false, null);
