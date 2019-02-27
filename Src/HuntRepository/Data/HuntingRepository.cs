@@ -26,6 +26,9 @@ namespace HuntRepository.Data
 
             var result = new Result<Hunting>(false, new Hunting());
             var listQuarries = new List<Quarry>();
+            var partialHunting = new List<PartialHunting>();
+            var randomNumberList = new List<int>();
+            randomNumberList = GenerateList(hunting.Users.Count);
             IDbContextTransaction tx = null;   
             try{
                 tx = context.Database.BeginTransaction();
@@ -37,7 +40,21 @@ namespace HuntRepository.Data
                     var newQuarry = context.Animals.FirstOrDefault(x=>x.Identifier == quarry.Animal.Identifier);
                     listQuarries.Add(new Quarry(){Animal=newQuarry, Amount = quarry.Amount});
                 }
+
+                foreach(var part in hunting.PartialHuntings){
+                    int i =0;
+                    var partialHunters = new List<PartialHuntersList>();
+                    foreach(var user in part.PartialHunters){
+                        var tmpUser = context.Users.FirstOrDefault(x=>x.Identifier == user.User.Identifier);
+                        partialHunters.Add(new PartialHuntersList(){User=tmpUser,HunterNumber = randomNumberList[i] });
+                        i++;
+                    }
+                    partialHunting.Add(new PartialHunting(){PartialHunters=partialHunters,Status=true,Number=part.Number});
+                }
+
+
                 hunting.Quarries = listQuarries;
+                hunting.PartialHuntings = partialHunting;
                 context.Huntings.Add(hunting);
                 context.SaveChanges();
                 tx.Commit();
@@ -147,6 +164,30 @@ namespace HuntRepository.Data
                     tx?.Dispose();
                 }
             }
+        }
+
+        private List<T> ShuffleList<T>(List<T> list)
+        {
+            Random rd = new Random();
+            int count = list.Count;
+            while (count > 1) {
+                count--;
+                int k = (rd.Next(0,count)%count);
+                T value = list[k];
+                list[k] = list[count];
+                list[count] = value;
+            }
+            return list;
+        }
+
+        private List<int> GenerateList(int count)
+        {
+            var list = new List<int>();
+            for (int i = 0; i < count; i++) {
+                list.Add(i);
+            }
+            list = ShuffleList<int>(list);
+            return list;
         }
     }
 }

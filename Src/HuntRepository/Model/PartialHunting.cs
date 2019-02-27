@@ -8,6 +8,7 @@ namespace Hunt.Model
     {
         [Key]
         public Guid Identifier { get; set; }
+        public int Number { get; set; }
         public Hunting Hunting { get;set; }
         public bool Status { get;set; }
         public ICollection<PartialHuntersList> PartialHunters {get; set;}
