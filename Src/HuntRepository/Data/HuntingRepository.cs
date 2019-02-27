@@ -25,6 +25,7 @@ namespace HuntRepository.Data
         {
 
             var result = new Result<Hunting>(false, new Hunting());
+            var listQuarries = new List<Quarry>();
             IDbContextTransaction tx = null;   
             try{
                 tx = context.Database.BeginTransaction();
@@ -32,6 +33,11 @@ namespace HuntRepository.Data
                 hunting.Issued = DateTime.Now;
                 hunting.Leader = context.Users.FirstOrDefault(x=>x.Identifier == hunting.Leader.Identifier);
                 hunting.Status = true;
+                foreach(var quarry in hunting.Quarries){
+                    var newQuarry = context.Animals.FirstOrDefault(x=>x.Identifier == quarry.Animal.Identifier);
+                    listQuarries.Add(new Quarry(){Animal=newQuarry, Amount = quarry.Amount});
+                }
+                hunting.Quarries = listQuarries;
                 context.Huntings.Add(hunting);
                 context.SaveChanges();
                 tx.Commit();

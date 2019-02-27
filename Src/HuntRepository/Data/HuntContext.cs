@@ -21,6 +21,7 @@ namespace Hunt.Data
             modelBuilder.Entity<UserHunting>().HasOne(h => h.User).WithMany(s=>s.Huntings).HasForeignKey(k=>k.UserId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<UserHunting>().HasOne(h => h.Hunting).WithMany(s=>s.Users).HasForeignKey(k => k.HuntingId).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<User>().HasOne(r => r.Role).WithMany().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Hunting>().HasMany(x=>x.Quarries).WithOne().OnDelete(DeleteBehavior.Restrict);
         } 
 
         public DbSet<User> Users { get; set; }
@@ -31,5 +32,6 @@ namespace Hunt.Data
         public DbSet<Hunting> Huntings {get;set;}
 
         public DbSet<Score> Scores {get;set;}
+        public DbSet<Quarry> Quarries { get; set; }
     }
 }
