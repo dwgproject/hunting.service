@@ -3,12 +3,13 @@ using Hunt.ServiceContext;
 using Hunt.ServiceContext.Domain;
 using Hunt.ServiceContext.Exceptions;
 using Hunt.ServiceContext.Extensions;
-using Hunt.ServiceContext.Results;
+using Hunt.ServiceContext.Result;
 using Hunt.ServiceContext.ServiceSession;
 using System;
 using System.Collections.Generic;
 using HuntRepository.Extensions;
 using System.Linq;
+using HuntRepository.Infrastructure;
 
 namespace Hunt.ServiceContext
 {
@@ -30,29 +31,39 @@ namespace Hunt.ServiceContext
             return session.Get(identifier) != null;
         }
 
-        public Result<User> SignIn(Authentication authentication)
+        public ServiceResult<User> SignIn(Authentication authentication)
         {
-            var result = repository.GetUserByAuthetication(authentication.Login, authentication.Password);            
-            if (!result.IsSuccess)
-                return new Result<User>(false, null);
-            var user = new User().ConverToUserService(result.Payload);
-            return new Result<User>(true, user);
+            Result<Model.User> getUserByAutheticationResult = repository.GetUserByAuthetication(authentication.Login, authentication.Password);            
+            return getUserByAutheticationResult.IsSuccess ? 
+                    ServiceResult<User>.Success(new User().ConverToUserService(getUserByAutheticationResult.Payload),"code") :
+                        ServiceResult<User>.Failed(null,"code");//może jakiś Dummy Object
         }
 
-        public Result<string> SignOut(Guid identifier)
+        public ServiceResult<string> SignOut(Guid identifier)
         {
             try{
                 session.Close(identifier);
             }catch (SessionCloseException ex){
-                return new Result<string>(false, ex.GetBaseException().Message);
+                return ServiceResult<string>.Failed(ex.GetBaseException().Message,"code");
             }
-            return new Result<string>(true, Context.session_closed_message);
-        }
-
-        public Result<string> SignUp(FullUser user)
-        {
-            var result = repository.Add(user.ConverToUserRepository());
-            return new Result<string>(result.IsSuccess, result.IsSuccess ? user_added_message : "Problem.");
+            return ServiceResult<string>.Success(Context.session_closed_message, "code");
         }
     }
 }
+
+
+
+            // if (!result.IsSuccess)
+            //     return new ServiceResult<User>(false, null);
+            // var user = new User().ConverToUserService(result.Payload);
+            // return new ServiceResult<User>(true, user);
+
+            
+        // public ServiceResult<string> SignUp(FullUser user)
+        // {
+        //     var result = repository.Add(user.ConverToUserRepository());
+
+        //     return new ServiceResult<string>(result.IsSuccess, result.IsSuccess ? user_added_message : "Problem.");
+        // }
+
+        //return new ServiceResult<string>(false, ex.GetBaseException().Message);

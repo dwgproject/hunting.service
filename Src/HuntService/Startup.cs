@@ -30,7 +30,7 @@ namespace HuntingHelperWebService
         {
             services.AddDbContext<HuntContext>(options => options.UseSqlServer(Configuration.GetValue<string>("ConnectionString:DefaultConnection")));
             services.AddTransient<IServiceContext, Context>();
-            services.AddTransient<IRepository, Repository>();
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IRoleRepository, RoleRepository>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddMvc(options => {

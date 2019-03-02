@@ -45,19 +45,12 @@ namespace Hunt.Controllers
         [HttpPost]
         public JsonResult SignUp([FromBody]User user)
         {
-            if (user == null) 
-                return MessagePayloadResponse.Failure("User is Null.");
-
-            if (user.Identifier != Guid.Empty){
-                Result<User> result = repository.Find(user.Identifier);
-                
-                    return MessagePayloadResponse.Failure($"User {result.Payload.Name} already exist.");
-            }
+            return new JsonResult("Ok");
             
-            user.Identifier = Guid.NewGuid();
-            Result<User> result1 = repository.Add(user);
+            // user.Identifier = Guid.NewGuid();
+            // Result<User> result = repository.Add(user);
             
-            return MessagePayloadResponse.Success($"User {user.Identifier} has been added.");
+            // return MessagePayloadResponse.Success($"User {user.Identifier} has been added.");
         }
         
         [HttpPost]
