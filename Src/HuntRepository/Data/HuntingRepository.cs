@@ -6,6 +6,7 @@ using Hunt.Data;
 using Hunt.Model;
 using HuntRepository.Infrastructure;
 using log4net;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HuntRepository.Data
@@ -35,7 +36,7 @@ namespace HuntRepository.Data
                 hunting.Identifier = Guid.NewGuid();
                 hunting.Issued = DateTime.Now;
                 hunting.Leader = context.Users.FirstOrDefault(x=>x.Identifier == hunting.Leader.Identifier);
-                hunting.Status = true;
+                hunting.Status = Status.Create;
                 foreach(var quarry in hunting.Quarries){
                     var newQuarry = context.Animals.FirstOrDefault(x=>x.Identifier == quarry.Animal.Identifier);
                     listQuarries.Add(new Quarry(){Animal=newQuarry, Amount = quarry.Amount});
@@ -49,7 +50,7 @@ namespace HuntRepository.Data
                         partialHunters.Add(new PartialHuntersList(){User=tmpUser,HunterNumber = randomNumberList[i] });
                         i++;
                     }
-                    partialHunting.Add(new PartialHunting(){PartialHunters=partialHunters,Status=true,Number=part.Number});
+                    partialHunting.Add(new PartialHunting(){PartialHunters=partialHunters,Status=Status.Create,Number=part.Number});
                 }
 
 
@@ -106,7 +107,7 @@ namespace HuntRepository.Data
                 IDbContextTransaction tx = null;
                 try{
                     tx = context.Database.BeginTransaction();
-                    tmpHunting.Status=false;
+                    tmpHunting.Status=Status.Finish;
                     context.SaveChanges();
                     tx.Commit();
                     result = new Result<Hunting>(true, tmpHunting);
@@ -131,7 +132,7 @@ namespace HuntRepository.Data
             var result = new Result<IEnumerable<Hunting>>(false, new List<Hunting>());
             IDbContextTransaction tx = null;
             try{
-                var resultQuery = context.Huntings.Where(ux=>query.Invoke(ux));
+                var resultQuery = context.Huntings.Include(l=>l.Leader).Include(q=>q.Quarries).Include(ph=>ph.PartialHuntings).Include(u=>u.Users).Where(query);
                 return new Result<IEnumerable<Hunting>>(true, resultQuery.AsEnumerable());
             }
             catch(Exception ex){
@@ -147,7 +148,7 @@ namespace HuntRepository.Data
         public void Update(Hunting hunting)
         {
             var tmpHunting = context.Huntings.Find(hunting.Identifier);
-            if(tmpHunting!=null && tmpHunting.Status!=false)
+            if(tmpHunting!=null && tmpHunting.Status!=Status.Finish)
             {
                 IDbContextTransaction tx = null;
                 try{
@@ -163,6 +164,26 @@ namespace HuntRepository.Data
                 finally{
                     tx?.Dispose();
                 }
+            }
+        }
+
+        public Result<Hunting> Start(Guid identifier)
+        {
+            var result = new Result<Hunting>(false, new Hunting());
+            var selectedHunting = context.Huntings.Find(identifier);
+            IDbContextTransaction tx = null;
+            try {
+                tx = context.Database.BeginTransaction();
+                selectedHunting.Status = Status.Activate;
+                context.SaveChanges();
+                tx.Commit();
+                return result = new Result<Hunting>(true, selectedHunting);
+            }
+            catch (Exception ex) {
+                return result;
+            }
+            finally {
+                tx?.Dispose();
             }
         }
 
@@ -189,5 +210,7 @@ namespace HuntRepository.Data
             list = ShuffleList<int>(list);
             return list;
         }
+
+
     }
 }
