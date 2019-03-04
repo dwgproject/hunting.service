@@ -31,12 +31,12 @@ namespace Hunt.ServiceContext
             return session.Get(identifier) != null;
         }
 
-        public ServiceResult<User> SignIn(Authentication authentication)
+        public ServiceResult<Guid> SignIn(Authentication authentication)
         {
             Result<Model.User> getUserByAutheticationResult = repository.GetUserByAuthetication(authentication.Login, authentication.Password);            
             return getUserByAutheticationResult.IsSuccess ? 
-                    ServiceResult<User>.Success(new User().ConverToUserService(getUserByAutheticationResult.Payload),"code") :
-                        ServiceResult<User>.Failed(null,"code");//może jakiś Dummy Object
+                    ServiceResult<Guid>.Success(getUserByAutheticationResult.Payload.Identifier, "code") :
+                        ServiceResult<Guid>.Failed(Guid.Empty,"code");
         }
 
         public ServiceResult<string> SignOut(Guid identifier)
