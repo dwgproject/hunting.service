@@ -42,7 +42,8 @@ namespace Hunt.ServiceContext{
 
         public ServiceResult<string> Delete(Guid identifier)
         {
-            throw new NotImplementedException();
+            userRepository.Delete(identifier);
+            return ServiceResult<string>.Success(string.Empty, "code");
         }
 
         public ServiceResult<User> Get(Guid identifer)
