@@ -27,7 +27,7 @@ namespace Hunt.Controllers
         public JsonResult Get(Guid identifier)
         {
             ServiceResult<User> getResult = userService.Get(identifier);
-            return new JsonResult(Response<User>.Create(getResult.IsSuccess, getResult.Payload));
+            return new JsonResult(Response<User>.Create(getResult.IsSuccess, getResult.Payload, getResult.Code));
         }
 
         [HttpGet]
@@ -41,24 +41,19 @@ namespace Hunt.Controllers
         [HttpPost]
         public JsonResult SignUp([FromBody]FullUser user)
         {
-            
-            
-            
-            
-            return new JsonResult("Ok");
-            
+            ServiceResult<string> addResult = userService.Add(user);
+            return new JsonResult(Response<string>.Create(addResult.IsSuccess, addResult.Payload, addResult.Code));
         }
         
         [HttpPost]
         public JsonResult SignIn([FromBody]Authentication authentication){ // zaloguj się
             ServiceResult<Guid> authenticationResult = serviceContext.SignIn(authentication);
-            return new JsonResult(Response<Guid>.Create(authenticationResult.IsSuccess, authenticationResult.Payload));
+            return new JsonResult(Response<Guid>.Create(authenticationResult.IsSuccess, authenticationResult.Payload, authenticationResult.Code));
         }
         
         [HttpPost]
         public JsonResult SignOut(Guid identifier){
-            if (identifier == Guid.Empty)
-                return MessagePayloadResponse.Failure($"User don't exist.");
+           
                 
             
             return new JsonResult("Ok");
@@ -66,10 +61,7 @@ namespace Hunt.Controllers
 
         [HttpDelete]
         public JsonResult Delete(Guid identifier){
-            if (identifier == Guid.Empty)
-                return MessagePayloadResponse.Failure($"User don't exist.");
-            
-            return MessagePayloadResponse.Success("User has been deleted");
+            return new JsonResult("Ok");
         }
     }
 }

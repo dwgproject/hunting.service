@@ -50,20 +50,3 @@ namespace Hunt.ServiceContext
         }
     }
 }
-
-
-
-            // if (!result.IsSuccess)
-            //     return new ServiceResult<User>(false, null);
-            // var user = new User().ConverToUserService(result.Payload);
-            // return new ServiceResult<User>(true, user);
-
-            
-        // public ServiceResult<string> SignUp(FullUser user)
-        // {
-        //     var result = repository.Add(user.ConverToUserRepository());
-
-        //     return new ServiceResult<string>(result.IsSuccess, result.IsSuccess ? user_added_message : "Problem.");
-        // }
-
-        //return new ServiceResult<string>(false, ex.GetBaseException().Message);

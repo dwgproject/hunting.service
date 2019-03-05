@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Hunt.Responses;
 using Hunt.ServiceContext;
@@ -19,23 +20,21 @@ namespace Hunt.Controllers
         public JsonResult GetAllRoles()
         {
             var queryResult = configuration.GetRoles();
-            if (queryResult.IsSuccess)
-                return new JsonResult(Response<RolesPayload>.Create(queryResult.IsSuccess, RolesPayload.Create(queryResult.Payload)));
-            return new JsonResult(Response<RolesPayload>.Create(queryResult.IsSuccess, RolesPayload.Create(Enumerable.Empty<Role>())));
+            return new JsonResult(Response<IEnumerable<Role>>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
         }
 
         [HttpPost]
         public JsonResult AddRole([FromBody]Role role)
         {
             var queryResult = configuration.AddRole(role);
-            return  queryResult.IsSuccess ? MessagePayloadResponse.Success(queryResult.Payload) : MessagePayloadResponse.Failure(queryResult.Payload);
+            return new JsonResult(Response<string>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
         }
 
         [HttpDelete]
         public JsonResult DeleteRole([FromBody]Guid identifier)
         {
             var queryResult = configuration.DeleteRole(identifier);
-            return queryResult.IsSuccess ? MessagePayloadResponse.Success(queryResult.Payload) : MessagePayloadResponse.Failure(queryResult.Payload);
+            return new JsonResult(Response<string>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
         }
     }
 }
