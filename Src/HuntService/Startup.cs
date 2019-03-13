@@ -28,7 +28,7 @@ namespace HuntingHelperWebService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<HuntContext>(options => options.UseSqlServer(Configuration.GetValue<string>("ConnectionString:DefaultConnection")));
+            services.AddDbContext<HuntContext>(options => options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetValue<string>("ConnectionString:DefaultConnection")));
             services.AddTransient<IServiceContext, Context>();
             services.AddTransient<IRepository, Repository>();
             services.AddTransient<IRoleRepository, RoleRepository>();

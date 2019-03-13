@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Hunt.Configuration;
 using Hunt.Data;
 using Hunt.Model;
 using HuntRepository.Infrastructure;
 using log4net;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HuntRepository.Model
@@ -38,12 +40,44 @@ namespace HuntRepository.Model
 
         public Result<PartialHunting> Finish(Guid identifier)
         {
-            throw new NotImplementedException();
+            var result = new Result<PartialHunting>(false, new PartialHunting());
+            var selectedPartialHunting = context.PartialHuntings.Find(identifier);
+            IDbContextTransaction tx = null;
+            try
+            {
+                tx = context.Database.BeginTransaction();
+                selectedPartialHunting.Status = Status.Finish;
+                context.SaveChanges();
+                tx.Commit();
+                return new Result<PartialHunting>(true, selectedPartialHunting);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+                return result;
+            }
+            finally
+            {
+                tx?.Dispose();
+            }
         }
 
         public Result<IEnumerable<PartialHunting>> Query(Func<PartialHunting, bool> query)
         {
-            throw new NotImplementedException();
+            var result = new Result<IEnumerable<PartialHunting>>(false, new List<PartialHunting>());
+            IDbContextTransaction tx = null;
+            try {
+                tx = context.Database.BeginTransaction();
+                var resultQuary = context.PartialHuntings.Include(x=>x.Hunting).Where(ux => query.Invoke(ux));
+                return result = new Result<IEnumerable<PartialHunting>>(true, resultQuary.AsEnumerable());
+            }
+            catch (Exception ex) {
+                log.Error(ex);
+                return result;
+            }
+            finally {
+                tx?.Dispose();
+            }
         }
 
         public Result<PartialHunting> Start(Guid identifier)

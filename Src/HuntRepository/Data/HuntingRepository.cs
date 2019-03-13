@@ -153,7 +153,7 @@ namespace HuntRepository.Data
                 IDbContextTransaction tx = null;
                 try{
                     tx = context.Database.BeginTransaction();
-                    tmpHunting.Leader = hunting.Leader;
+                    tmpHunting.Leader = context.Users.FirstOrDefault(i=>i.Identifier == hunting.Leader.Identifier) ?? tmpHunting.Leader;
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano polowanie {hunting}");
