@@ -93,8 +93,8 @@ namespace HuntRepository.Data
             IDbContextTransaction tx = null;
             try {
                 tx = context.Database.BeginTransaction();
-                existQuarry.Animal = context.Animals.FirstOrDefault(x => x.Identifier == quarry.Animal.Identifier);
-                existQuarry.Amount = quarry.Amount-1;
+                existQuarry.Animal = context.Animals.FirstOrDefault(x => x.Identifier == quarry.Animal.Identifier) ?? existQuarry.Animal;
+                existQuarry.Amount = existQuarry.Amount-quarry.Amount;
                 context.SaveChanges();
                 tx.Commit();
             }
