@@ -6,6 +6,7 @@ using Hunt.Data;
 using Hunt.Model;
 using HuntRepository.Infrastructure;
 using log4net;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HuntRepository.Data
@@ -26,7 +27,12 @@ namespace HuntRepository.Data
             var result = new Result<Score>(false, new Score());
             IDbContextTransaction tx = null;
             try{
+                tx = context.Database.BeginTransaction();
                 score.Identifier = Guid.NewGuid();
+                score.Issued = DateTime.Now;
+                score.Quarry = context.Quarries.FirstOrDefault(a => a.Identifier == score.Quarry.Identifier);
+                score.Hunting = context.Huntings.FirstOrDefault(h => h.Identifier == score.Hunting.Identifier);
+                score.User = context.Users.FirstOrDefault(u => u.Identifier == score.User.Identifier);
                 context.Scores.Add(score);
                 context.SaveChanges();
                 tx.Commit();
@@ -51,6 +57,7 @@ namespace HuntRepository.Data
                 try{
                     tx = context.Database.BeginTransaction();
                     context.Scores.Remove(tmpScore);
+                    tx.Commit();
                     log.Info($"Usunięto rezultat {identifier}");
                 }
                 catch(Exception ex){
@@ -73,7 +80,7 @@ namespace HuntRepository.Data
             var result = new Result<IEnumerable<Score>>(false, new List<Score>());
             IDbContextTransaction tx = null;
             try{
-                var resultQuery = context.Scores.Where(ux=>query.Invoke(ux));
+                var resultQuery = context.Scores.Include(u=>u.User).Include(q=>q.Quarry).Include(h=>h.Hunting).Where(ux=>query.Invoke(ux));
                 return new Result<IEnumerable<Score>>(true, resultQuery.AsEnumerable());
             }
             catch(Exception ex){
@@ -93,7 +100,7 @@ namespace HuntRepository.Data
                 IDbContextTransaction tx = null;
                 try{
                     tx = context.Database.BeginTransaction();
-                    tmpScore.Animal = score.Animal;
+                    tmpScore.Quarry = score.Quarry;
                     tmpScore.Quantity = score.Quantity;
                     context.SaveChanges();
                     tx.Commit();

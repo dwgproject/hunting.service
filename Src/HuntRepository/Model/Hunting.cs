@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Hunt.Model;
 
-namespace Hunt.Model{
+namespace Hunt.Model
+{
     public class Hunting{
 
         [Key]
@@ -13,9 +14,10 @@ namespace Hunt.Model{
         
         [ForeignKey("UserIdentifier")]
         public User Leader { get; set; }
-        public bool Status {get;set;}
+        public Status Status {get;set;}
+        public string Description { get; set; }
         public ICollection<UserHunting> Users { get; set; }
-        public ICollection<Animal> Animals { get; set; }
+        public ICollection<Quarry> Quarries { get; set; }
         //wszystkie mioty na polowanie
         public ICollection<PartialHunting> PartialHuntings {get; set;}
     }
