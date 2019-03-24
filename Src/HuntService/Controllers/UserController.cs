@@ -1,10 +1,9 @@
 using Hunt.Data;
 using Hunt.Eventing;
-using Hunt.Model;
 using Hunt.Responses;
 using Hunt.ServiceContext;
-using HuntRepository.Extensions;
-using HuntRepository.Infrastructure;
+using Hunt.ServiceContext.Domain;
+using Hunt.ServiceContext.Result;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -16,77 +15,61 @@ namespace Hunt.Controllers
     {
         private IServiceContext serviceContext;
         private IHubContext<EventingHub> hub;
-        private IUserRepository repository;
-        
-        public UserController(IHubContext<EventingHub> hub, IServiceContext serviceContext, IRepository repository)
+        private  IUserService userService;
+        public UserController(IHubContext<EventingHub> hub, IServiceContext serviceContext, IUserService userService)
         {
             this.serviceContext = serviceContext;
-            this.repository = repository.UserRepository;
+            this.userService = userService;
             this.hub = hub;
         }
 
         [HttpGet]
         public JsonResult Get(Guid identifier)
         {
-            if (identifier == Guid.Empty) 
-                return MessagePayloadResponse.Failure("User don't exists.");
-                       
-            return new JsonResult("ok");
+            ServiceResult<User> getResult = userService.Get(identifier);
+            return new JsonResult(Response<User>.Create(getResult.IsSuccess, getResult.Payload, getResult.Code));
         }
 
         [HttpGet]
         public JsonResult GetAll()
         {
             //example query
-            var queryResult = repository.GetUsersByDate(DateTime.Now, DateTime.Now);
+            //var queryResult = repository.GetUsersByDate(DateTime.Now, DateTime.Now);
             return new JsonResult("ok");
         }
 
         [HttpPost]
-        public JsonResult SignUp([FromBody]User user)
+        public JsonResult SignUp([FromBody]FullUser user)
         {
-            if (user == null) 
-                return MessagePayloadResponse.Failure("User is Null.");
-
-            if (user.Identifier != Guid.Empty){
-                Result<User> result = repository.Find(user.Identifier);
-                
-                    return MessagePayloadResponse.Failure($"User {result.Payload.Name} already exist.");
-            }
-            
-            user.Identifier = Guid.NewGuid();
-            Result<User> result1 = repository.Add(user);
-            
-            return MessagePayloadResponse.Success($"User {user.Identifier} has been added.");
+            ServiceResult<string> addResult = userService.Add(user);
+            return new JsonResult(Response<string>.Create(addResult.IsSuccess, addResult.Payload, addResult.Code));
         }
         
         [HttpPost]
-        public JsonResult SignIn([FromBody]User user){
-            if (user == null) 
-                return MessagePayloadResponse.Failure("User is Null.");
-            
-            if (user.Identifier == Guid.Empty)
-                return MessagePayloadResponse.Failure($"User don't exist.");
-                       
-            
-            return new JsonResult("Ok");
+        public JsonResult SignIn([FromBody]Authentication authentication)
+        {
+            ServiceResult<Guid> authenticationResult = serviceContext.SignIn(authentication);
+            return new JsonResult(Response<Guid>.Create(authenticationResult.IsSuccess, authenticationResult.Payload, authenticationResult.Code));
         }
         
         [HttpPost]
-        public JsonResult SignOut(Guid identifier){
-            if (identifier == Guid.Empty)
-                return MessagePayloadResponse.Failure($"User don't exist.");
-                
-            
-            return new JsonResult("Ok");
+        public JsonResult SignOut(Guid identifier)
+        {
+            ServiceResult<string> signOutResult = serviceContext.SignOut(identifier);
+            return new JsonResult(Response<string>.Create(signOutResult.IsSuccess, signOutResult.Payload, signOutResult.Code));
         }
 
         [HttpDelete]
-        public JsonResult Delete(Guid identifier){
-            if (identifier == Guid.Empty)
-                return MessagePayloadResponse.Failure($"User don't exist.");
-            
-            return MessagePayloadResponse.Success("User has been deleted");
+        public JsonResult Delete(Guid identifier)
+        {
+            ServiceResult<string> deleteResult = userService.Delete(identifier);
+            return new JsonResult(Response<string>.Create(deleteResult.IsSuccess, deleteResult.Payload, deleteResult.Code));
         }
     }
 }
+
+
+            // user.Identifier = Guid.NewGuid();
+            // Result<User> result = repository.Add(user);
+            
+            // return MessagePayloadResponse.Success($"User {user.Identifier} has been added.");
