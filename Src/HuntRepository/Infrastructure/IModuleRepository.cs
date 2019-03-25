@@ -4,10 +4,10 @@ using System.Collections.Generic;
 namespace HuntRepository.Infrastructure{
     public interface IModuleRepository<TResult, TModelParam, TIdentifierParam>{
 
-        Result<TResult> Add(TModelParam user);
-        void Delete(TIdentifierParam identifier);
-        void Update(TModelParam user);
-        Result<TResult> Find(TIdentifierParam identifier);
-        Result<IEnumerable<TResult>> Query(Func<TModelParam, bool> query);
+        RepositoryResult<TResult> Add(TModelParam user);
+        RepositoryResult<string> Delete(TIdentifierParam identifier);
+        RepositoryResult<string> Update(TModelParam user);
+        RepositoryResult<TResult> Find(TIdentifierParam identifier);
+        RepositoryResult<IEnumerable<TResult>> Query(Func<TModelParam, bool> query);
     }
 }
