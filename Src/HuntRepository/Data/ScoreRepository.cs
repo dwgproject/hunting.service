@@ -14,6 +14,7 @@ namespace HuntRepository.Data
     {
          private readonly HuntContext context;
          private readonly ILog log = LogManager.GetLogger(typeof(HuntingRepository));
+         private string TAG = "RS";
 
         public ScoreRepository(HuntContext context)
         {
@@ -21,16 +22,16 @@ namespace HuntRepository.Data
             LoggerConfig.ReadConfiguration();
         }
 
-        public Result<Score> Add(Score score)
+        public RepositoryResult<Score> Add(Score score)
         {
-            var result = new Result<Score>(false, new Score());
+            var result = new RepositoryResult<Score>(false, new Score());
             IDbContextTransaction tx = null;
             try{
                 score.Identifier = Guid.NewGuid();
                 context.Scores.Add(score);
                 context.SaveChanges();
                 tx.Commit();
-                result = new Result<Score>(true, score);
+                result = new RepositoryResult<Score>(true, score);
                 log.Info($"Dodano nowy rezultar {score}");
                 return result;
             }
@@ -43,38 +44,49 @@ namespace HuntRepository.Data
             }
         }
 
-        public void Delete(Guid identifier)
+        public RepositoryResult<string> Delete(Guid identifier)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpScore = context.Scores.Find(identifier);
             if(tmpScore!=null){
                 IDbContextTransaction tx = null;
                 try{
                     tx = context.Database.BeginTransaction();
                     context.Scores.Remove(tmpScore);
+                    context.SaveChanges();
+                    tx.Commit();
                     log.Info($"Usunięto rezultat {identifier}");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się usunac rezultatu {identifier}, {ex}");
+                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"03");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
+            else{
+                result = new RepositoryResult<string>(false,"",TAG+"04");
+                return result;
+            }
 
         }
 
-        public Result<Score> Find(Guid identifier)
+        public RepositoryResult<Score> Find(Guid identifier)
         {
             throw new NotImplementedException();
         }
 
-        public Result<IEnumerable<Score>> Query(Func<Score, bool> query)
+        public RepositoryResult<IEnumerable<Score>> Query(Func<Score, bool> query)
         {
-            var result = new Result<IEnumerable<Score>>(false, new List<Score>());
+            var result = new RepositoryResult<IEnumerable<Score>>(false, new List<Score>());
             IDbContextTransaction tx = null;
             try{
                 var resultQuery = context.Scores.Where(ux=>query.Invoke(ux));
-                return new Result<IEnumerable<Score>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<Score>>(true, resultQuery.AsEnumerable());
             }
             catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło się {query}, {ex}");
@@ -86,8 +98,9 @@ namespace HuntRepository.Data
 
         }
 
-        public void Update(Score score)
+        public RepositoryResult<string> Update(Score score)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpScore = context.Scores.Find(score.Identifier);
             if(tmpScore!=null){
                 IDbContextTransaction tx = null;
@@ -98,13 +111,21 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano rezultat {score}");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało sie zaktualizować rezultatu {score}, {ex}");
+                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"01");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }
+            }
+            else{
+                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                return result;
             }
         }
     }

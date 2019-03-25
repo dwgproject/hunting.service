@@ -14,7 +14,8 @@ namespace HuntRepository.Data
     {
 
         private readonly HuntContext context;
-         private readonly ILog log = LogManager.GetLogger(typeof(RoleRepository));
+        private readonly ILog log = LogManager.GetLogger(typeof(RoleRepository));
+        private string TAG = "RR";
 
         public RoleRepository(HuntContext context)
         {
@@ -22,9 +23,9 @@ namespace HuntRepository.Data
             LoggerConfig.ReadConfiguration();
         }
 
-        public Result<Role> Add(Role role)
+        public RepositoryResult<Role> Add(Role role)
         {
-            var result = new Result<Role>(false, new Role());
+            var result = new RepositoryResult<Role>(false, new Role());
             IDbContextTransaction tx = null;
 
             try{
@@ -34,7 +35,7 @@ namespace HuntRepository.Data
                 context.Roles.Add(role);
                 context.SaveChanges();
                 tx.Commit();
-                result = new Result<Role>(true, role);
+                result = new RepositoryResult<Role>(true, role);
                 log.Info($"Dodano role: {role}");
                 return result;
             }catch(Exception ex){
@@ -46,8 +47,9 @@ namespace HuntRepository.Data
             
         }
 
-        public void Delete(Guid identifier)
+        public RepositoryResult<string> Delete(Guid identifier)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpRole = context.Roles.Find(identifier);
             if(tmpRole!=null)
             {
@@ -58,43 +60,51 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Usunięto role: {identifier}");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się usunać usera: {tmpRole.Name},{ex} ");
+                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"03");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
+            else{
+                result = new RepositoryResult<string>(false,"",TAG+"04");
+                return result;
+            }
         }
 
-        public Result<Role> Find(Guid identifier)
+        public RepositoryResult<Role> Find(Guid identifier)
         {
 
             HuntContext context = null;
             try{
                 var found = context.Roles.Find(identifier);
                 return found != null ? 
-                                new Result<Role>(true, found) : 
-                                    new Result<Role>(false, null);
+                                new RepositoryResult<Role>(true, found) : 
+                                    new RepositoryResult<Role>(false, null);
 
             }catch(Exception ex){
-                return new Result<Role>(false, null);    
+                return new RepositoryResult<Role>(false, null);    
             }finally{
                 context?.Dispose();
             }
 
         }
 
-        public Result<IEnumerable<Role>> Query(Func<Role, bool> query)
+        public RepositoryResult<IEnumerable<Role>> Query(Func<Role, bool> query)
         {
-            Result<IEnumerable<Role>> result = new Result<IEnumerable<Role>>(false, new List<Role>());
+            RepositoryResult<IEnumerable<Role>> result = new RepositoryResult<IEnumerable<Role>>(false, new List<Role>());
             //HuntContext context = null;
             IDbContextTransaction tx = null;
             try{
                 //context = new HuntContext();
                 var resultQuery = context.Roles.Where(ux => query.Invoke(ux));                
-                return new Result<IEnumerable<Role>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<Role>>(true, resultQuery.AsEnumerable());
             }catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło sie {query}, {ex}");
                 return result;
@@ -103,8 +113,9 @@ namespace HuntRepository.Data
             }
         }
 
-        public void Update(Role role)
+        public RepositoryResult<string> Update(Role role)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpRole = context.Roles.Find(role.Identifier);
             if(tmpRole!=null){
                 IDbContextTransaction tx = null;
@@ -114,13 +125,21 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano role:{role.Name} ");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało update usera:{role.Name}, {ex}");
+                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"01");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }
+            }
+            else{
+                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                return result;
             }
         }
     }

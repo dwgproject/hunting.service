@@ -15,6 +15,7 @@ namespace HuntRepository.Data
 
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(AnimalRepository));
+        private string TAG = "RA";
 
         public AnimalRepository(HuntContext context)
         {
@@ -22,9 +23,9 @@ namespace HuntRepository.Data
             LoggerConfig.ReadConfiguration();
         }
 
-        public Result<Animal> Add(Animal animal)
+        public RepositoryResult<Animal> Add(Animal animal)
         {
-            var result = new Result<Animal>(false, new Animal());
+            var result = new RepositoryResult<Animal>(false, new Animal());
             IDbContextTransaction tx = null;
             try{
                 tx = context.Database.BeginTransaction();
@@ -32,7 +33,7 @@ namespace HuntRepository.Data
                 context.Animals.Add(animal);
                 context.SaveChanges();
                 tx.Commit();
-                result = new Result<Animal>(true, animal);
+                result = new RepositoryResult<Animal>(true, animal);
                 log.Info($"Dodano zwierzyne {animal}");
                 return result;
                 
@@ -46,10 +47,10 @@ namespace HuntRepository.Data
             }           
         }
 
-        public void Delete(Guid identifier)
+        public RepositoryResult<string> Delete(Guid identifier)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpAnimal = context.Animals.Find(identifier);
-
             if(tmpAnimal!=null){
                 IDbContextTransaction tx = null;
                 try{
@@ -58,28 +59,36 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Usunięto zwierzyne: {identifier}");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało usunac się zwierzyny {identifier}, {ex}");
+                    result = new RepositoryResult<string>(false, ex.Message.ToString(), TAG+"03");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }    
             }
+            else{
+                result = new RepositoryResult<string>(false, "", TAG+"04");
+                return result;
+            }
         }
 
-        public Result<Animal> Find(Guid identifier)
+        public RepositoryResult<Animal> Find(Guid identifier)
         {
             throw new NotImplementedException();
         }
 
-        public Result<IEnumerable<Animal>> Query(Func<Animal, bool> query)
+        public RepositoryResult<IEnumerable<Animal>> Query(Func<Animal, bool> query)
         {
-            Result<IEnumerable<Animal>> result = new Result<IEnumerable<Animal>>(false, new List<Animal>());
+            RepositoryResult<IEnumerable<Animal>> result = new RepositoryResult<IEnumerable<Animal>>(false, new List<Animal>());
             IDbContextTransaction tx = null;
             try{
                 var resultQuery = context.Animals.Where(ux=>query.Invoke(ux));
-                return new Result<IEnumerable<Animal>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<Animal>>(true, resultQuery.AsEnumerable());
             }
             catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło się {query}, {ex}");
@@ -90,8 +99,9 @@ namespace HuntRepository.Data
             }
         }
 
-        public void Update(Animal animal)
+        public RepositoryResult<string> Update(Animal animal)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpAnimal = context.Animals.Find(animal.Identifier);
             if(tmpAnimal!=null){
                 IDbContextTransaction tx = null;
@@ -101,13 +111,21 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano zwierzyne {animal}");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
                 }
                 catch(Exception ex){
                     log.Error($"NIe powiodła się aktualizacja {animal}, {ex}");
+                    result = new RepositoryResult<string>(false, ex.Message.ToString(), TAG+"01");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }
+            }
+            else{
+                result = new RepositoryResult<string>(false, "", TAG+"01");
+                return result;
             }
         }
     }
