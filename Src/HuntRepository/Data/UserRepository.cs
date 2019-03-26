@@ -16,6 +16,7 @@ namespace Hunt.Data{
     {
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(UserRepository));
+        private string TAG = "RU";
 
  
         public UserRepository(HuntContext context)
@@ -25,9 +26,9 @@ namespace Hunt.Data{
 
         }
 
-        public Result<User> Add(User user)
+        public RepositoryResult<User> Add(User user)
         {
-            var result = new Result<User>(false, new User());
+            var result = new RepositoryResult<User>(false, new User());
             //HuntContext context = null;
             IDbContextTransaction tx = null;
             if(!context.Users.Any(i=>i.Email == user.Email)){
@@ -40,7 +41,7 @@ namespace Hunt.Data{
                     context.Users.Add(user);
                     context.SaveChanges();
                     tx.Commit();
-                    result = new Result<User>(true, user);
+                    result = new RepositoryResult<User>(true, user);
                     log.Info($"Dodano usera: {user}");
                     return result;
                 }catch(Exception ex){
@@ -56,8 +57,9 @@ namespace Hunt.Data{
             
         }
 
-        public void Delete(Guid identidier)
+        public RepositoryResult<string> Delete(Guid identidier)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpUser = context.Users.Find(identidier);
             if(tmpUser!=null)
             {
@@ -68,17 +70,25 @@ namespace Hunt.Data{
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Usunięto usera: {identidier}");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się usunać usera: {identidier},{ex} ");
+                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"03");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
+            else{
+                result = new RepositoryResult<string>(false,"",TAG+"04");
+                return result;
+            }
         }
 
-        public Result<User> Find(Guid identifier)
+        public RepositoryResult<User> Find(Guid identifier)
         {
             HuntContext context = null;
             try{
@@ -86,24 +96,24 @@ namespace Hunt.Data{
                 //var found = context.Users.Find(identifier);
                 var found = context.Users.Include(h=>h.Huntings).FirstOrDefault(i=>i.Identifier == identifier);
                 return found != null ? 
-                                new Result<User>(true, found) : 
-                                    new Result<User>(false, null);
+                                new RepositoryResult<User>(true, found) : 
+                                    new RepositoryResult<User>(false, null);
 
             }catch(Exception ex){
-                return new Result<User>(false, null);    
+                return new RepositoryResult<User>(false, null);    
             }finally{
             }
         }
 
-        public Result<IEnumerable<User>> Query(Func<User, bool> query)
+        public RepositoryResult<IEnumerable<User>> Query(Func<User, bool> query)
         {
-            Result<IEnumerable<User>> result = new Result<IEnumerable<User>>(false, new List<User>());
+            RepositoryResult<IEnumerable<User>> result = new RepositoryResult<IEnumerable<User>>(false, new List<User>());
             //HuntContext context = null;
             IDbContextTransaction tx = null;
             try{
                 //context = new HuntContext();
                 var resultQuery = context.Users.Include("Role").Where(ux => query.Invoke(ux));                
-                return new Result<IEnumerable<User>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<User>>(true, resultQuery.AsEnumerable());
             }catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło sie {query}, {ex}");
                 return result;
@@ -112,8 +122,9 @@ namespace Hunt.Data{
             }
         }
 
-        public void Update(User user)
+        public RepositoryResult<string> Update(User user)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpUser = context.Users.Find(user.Identifier);
             if(tmpUser!=null){
                 IDbContextTransaction tx = null;
@@ -127,13 +138,21 @@ namespace Hunt.Data{
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Update usera:{user} ");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało update usera:{user}, {ex}");
+                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"01");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }
+            }
+            else{
+                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                return result;
             }
         }
     }

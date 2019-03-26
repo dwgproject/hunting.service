@@ -14,15 +14,16 @@ namespace HuntRepository.Data
     {
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(ClubRepository));
+        private string TAG = "RC";
 
         public ClubRepository(HuntContext context)
         {
             this.context = context;
             LoggerConfig.ReadConfiguration();
         }
-        public Result<Club> Add(Club club)
+        public RepositoryResult<Club> Add(Club club)
         {
-            var result = new Result<Club>(false, new Club());
+            var result = new RepositoryResult<Club>(false, new Club());
             IDbContextTransaction tx = null;
             try{
                 tx = context.Database.BeginTransaction();
@@ -30,7 +31,7 @@ namespace HuntRepository.Data
                 context.Clubs.Add(club);
                 context.SaveChanges();
                 tx.Commit();
-                result = new Result<Club>(true, club);
+                result = new RepositoryResult<Club>(true, club);
                 log.Info($"Utworzono nowe koło łowieckie {club}");
                 return result;
                
@@ -44,10 +45,10 @@ namespace HuntRepository.Data
             }           
         }
 
-        public void Delete(Guid identifier)
+        public RepositoryResult<string> Delete(Guid identifier)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpClub = context.Clubs.Find(identifier);
-
             if(tmpClub!=null){
                 IDbContextTransaction tx = null;
                 try{
@@ -56,28 +57,36 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Usunięto koło łowieckie {identifier}");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się usunac koła łowieckiego {identifier}, {ex}");
+                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"03");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }    
             }
+            else{
+                result = new RepositoryResult<string>(false,"",TAG+"04");
+                return result;
+            }
         }
 
-        public Result<Club> Find(Guid identifier)
+        public RepositoryResult<Club> Find(Guid identifier)
         {
             throw new NotImplementedException();
         }
 
-        public Result<IEnumerable<Club>> Query(Func<Club, bool> query)
+        public RepositoryResult<IEnumerable<Club>> Query(Func<Club, bool> query)
         {
-            Result<IEnumerable<Club>> result = new Result<IEnumerable<Club>>(false, new List<Club>());
+            RepositoryResult<IEnumerable<Club>> result = new RepositoryResult<IEnumerable<Club>>(false, new List<Club>());
             IDbContextTransaction tx = null;
             try{
                 var resultQuery = context.Clubs.Where(ux=>query.Invoke(ux));
-                return new Result<IEnumerable<Club>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<Club>>(true, resultQuery.AsEnumerable());
             }
             catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło sie {query}, {ex}");
@@ -88,8 +97,9 @@ namespace HuntRepository.Data
             }
         }
 
-        public void Update(Club club)
+        public RepositoryResult<string> Update(Club club)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpClub = context.Clubs.Find(club.Identifier);
             if(tmpClub!=null){
                 IDbContextTransaction tx = null;
@@ -99,13 +109,22 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano koło łowieckie {club}");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
+
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się zaktualizować koła łowieckiego {club}, {ex}");
+                    result = new RepositoryResult<string>(false, ex.Message.ToString(),TAG+"01");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }
+            }
+            else{
+                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                return result;
             }
         }
     }

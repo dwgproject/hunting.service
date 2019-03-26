@@ -15,6 +15,7 @@ namespace HuntRepository.Data
     {
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(HuntingRepository));
+        private string TAG = "RH";
 
         public HuntingRepository(HuntContext context)
         {
@@ -22,10 +23,10 @@ namespace HuntRepository.Data
             LoggerConfig.ReadConfiguration();
         }
 
-        public Result<Hunting> Add(Hunting hunting)
+        public RepositoryResult<Hunting> Add(Hunting hunting)
         {
 
-            var result = new Result<Hunting>(false, new Hunting());
+            var result = new RepositoryResult<Hunting>(false, new Hunting());
             var listQuarries = new List<Quarry>();
             var partialHunting = new List<PartialHunting>();
             var randomNumberList = new List<int>();
@@ -59,7 +60,7 @@ namespace HuntRepository.Data
                 context.Huntings.Add(hunting);
                 context.SaveChanges();
                 tx.Commit();
-                result = new Result<Hunting>(true, hunting);
+                result = new RepositoryResult<Hunting>(true, hunting);
                 log.Info($"Dodano nowe polowanie {hunting}");
                 return result;
             }
@@ -73,8 +74,9 @@ namespace HuntRepository.Data
             
         }
 
-        public void Delete(Guid identifier)
+        public RepositoryResult<string> Delete(Guid identifier)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpHunting = context.Huntings.Find(identifier);
             if(tmpHunting!=null){
                 IDbContextTransaction tx=null;
@@ -84,24 +86,32 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Usunięto polowanie {identifier}");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się usunąc polowania {identifier}, {ex}");
+                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"03");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
+            else{
+                result = new RepositoryResult<string>(false,"",TAG+"04");
+                return result;
+            }
         }
 
-        public Result<Hunting> Find(Guid identifier)
+        public RepositoryResult<Hunting> Find(Guid identifier)
         {
             throw new NotImplementedException();
         }
 
-        public Result<Hunting> Finish(Hunting hunting)
+        public RepositoryResult<Hunting> Finish(Hunting hunting)
         {
-            var result = new Result<Hunting>(false, new Hunting());
+            var result = new RepositoryResult<Hunting>(false, new Hunting());
             var tmpHunting = context.Huntings.Find(hunting.Identifier);
             if(tmpHunting!=null){
                 IDbContextTransaction tx = null;
@@ -110,7 +120,7 @@ namespace HuntRepository.Data
                     tmpHunting.Status=Status.Finish;
                     context.SaveChanges();
                     tx.Commit();
-                    result = new Result<Hunting>(true, tmpHunting);
+                    result = new RepositoryResult<Hunting>(true, tmpHunting);
                     return result;
                 }
                 catch(Exception ex){
@@ -127,13 +137,13 @@ namespace HuntRepository.Data
             }
         }
 
-        public Result<IEnumerable<Hunting>> Query(Func<Hunting, bool> query)
+        public RepositoryResult<IEnumerable<Hunting>> Query(Func<Hunting, bool> query)
         {
-            var result = new Result<IEnumerable<Hunting>>(false, new List<Hunting>());
+            var result = new RepositoryResult<IEnumerable<Hunting>>(false, new List<Hunting>());
             IDbContextTransaction tx = null;
             try{
                 var resultQuery = context.Huntings.Include(l=>l.Leader).Include(q=>q.Quarries).Include(ph=>ph.PartialHuntings).Include(u=>u.Users).Where(query);
-                return new Result<IEnumerable<Hunting>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<Hunting>>(true, resultQuery.AsEnumerable());
             }
             catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło się {query}, {ex}");
@@ -145,32 +155,40 @@ namespace HuntRepository.Data
 
         }
 
-        public void Update(Hunting hunting)
+        public RepositoryResult<string> Update(Hunting hunting)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var tmpHunting = context.Huntings.Find(hunting.Identifier);
             if(tmpHunting!=null && tmpHunting.Status!=Status.Finish)
             {
                 IDbContextTransaction tx = null;
                 try{
                     tx = context.Database.BeginTransaction();
-                    tmpHunting.Leader = context.Users.FirstOrDefault(i=>i.Identifier == hunting.Leader.Identifier) ?? tmpHunting.Leader;
-                    tmpHunting.Description = hunting.Description ?? tmpHunting.Description;
+                    tmpHunting.Leader = hunting.Leader;
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano polowanie {hunting}");
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się zaktuaizować polowania {hunting}, {ex}");
+                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"01");
+                    return result;
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
+            else{
+                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                return result;
+            }
         }
 
-        public Result<Hunting> Start(Guid identifier)
+        public RepositoryResult<Hunting> Start(Guid identifier)
         {
-            var result = new Result<Hunting>(false, new Hunting());
+            var result = new RepositoryResult<Hunting>(false, new Hunting());
             var selectedHunting = context.Huntings.Find(identifier);
             IDbContextTransaction tx = null;
             try {
@@ -178,7 +196,7 @@ namespace HuntRepository.Data
                 selectedHunting.Status = Status.Activate;
                 context.SaveChanges();
                 tx.Commit();
-                return result = new Result<Hunting>(true, selectedHunting);
+                return result = new RepositoryResult<Hunting>(true, selectedHunting);
             }
             catch (Exception ex) {
                 return result;
