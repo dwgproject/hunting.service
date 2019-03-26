@@ -106,7 +106,18 @@ namespace HuntRepository.Data
 
         public RepositoryResult<Hunting> Find(Guid identifier)
         {
-            throw new NotImplementedException();
+                try{
+                var found = context.Huntings.Include(l=>l.Leader).Include(s=>s.Status).Include(u=>u.Users).Include(q=>q.Quarries).Include(p=>p.PartialHuntings).FirstOrDefault(i=>i.Identifier==identifier);
+                return found != null ?
+                                new RepositoryResult<Hunting>(true, found):
+                                new RepositoryResult<Hunting>(false, null);
+                            
+            }
+            catch(Exception ex){
+                log.Error($"{ex}");
+                return new RepositoryResult<Hunting>(false, null);
+            }
+            finally{}
         }
 
         public RepositoryResult<Hunting> Finish(Hunting hunting)

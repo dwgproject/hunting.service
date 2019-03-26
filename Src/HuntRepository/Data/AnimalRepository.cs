@@ -79,7 +79,18 @@ namespace HuntRepository.Data
 
         public RepositoryResult<Animal> Find(Guid identifier)
         {
-            throw new NotImplementedException();
+            try{
+                var found = context.Animals.Find(identifier);
+                return found != null ?
+                                new RepositoryResult<Animal>(true, found):
+                                new RepositoryResult<Animal>(false, null);
+                            
+            }
+            catch(Exception ex){
+                log.Error($"{ex}");
+                return new RepositoryResult<Animal>(false, null);
+            }
+            finally{}
         }
 
         public RepositoryResult<IEnumerable<Animal>> Query(Func<Animal, bool> query)

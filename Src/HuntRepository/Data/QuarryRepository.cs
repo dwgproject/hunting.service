@@ -6,6 +6,7 @@ using Hunt.Data;
 using Hunt.Model;
 using HuntRepository.Infrastructure;
 using log4net;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HuntRepository.Data
@@ -71,7 +72,18 @@ namespace HuntRepository.Data
 
         public RepositoryResult<Quarry> Find(Guid identifier)
         {
-            throw new NotImplementedException();
+            try{
+                var found = context.Quarries.Include(a=>a.Animal).FirstOrDefault(i=>i.Identifier == identifier);
+                return found != null ?
+                                new RepositoryResult<Quarry>(true, found):
+                                new RepositoryResult<Quarry>(false, null);
+                            
+            }
+            catch(Exception ex){
+                log.Error($"{ex}");
+                return new RepositoryResult<Quarry>(false, null);
+            }
+            finally{}
         }
 
         public RepositoryResult<IEnumerable<Quarry>> Query(Func<Quarry, bool> query)

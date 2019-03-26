@@ -77,7 +77,18 @@ namespace HuntRepository.Data
 
         public RepositoryResult<Club> Find(Guid identifier)
         {
-            throw new NotImplementedException();
+                try{
+                var found = context.Clubs.Find(identifier);
+                return found != null ?
+                                new RepositoryResult<Club>(true, found):
+                                new RepositoryResult<Club>(false, null);
+                            
+            }
+            catch(Exception ex){
+                log.Error($"{ex}");
+                return new RepositoryResult<Club>(false, null);
+            }
+            finally{}
         }
 
         public RepositoryResult<IEnumerable<Club>> Query(Func<Club, bool> query)

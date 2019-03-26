@@ -83,7 +83,18 @@ namespace HuntRepository.Data
 
         public RepositoryResult<Score> Find(Guid identifier)
         {
-            throw new NotImplementedException();
+            try{
+                var found = context.Scores.Include(u=>u.User).Include(q=>q.Quarry).Include(h=>h.Hunting).FirstOrDefault(i=>i.Identifier == identifier);
+                return found != null ?
+                                new RepositoryResult<Score>(true, found):
+                                new RepositoryResult<Score>(false, null);
+                            
+            }
+            catch(Exception ex){
+                log.Error($"{ex}");
+                return new RepositoryResult<Score>(false, null);
+            }
+            finally{}
         }
 
         public RepositoryResult<IEnumerable<Score>> Query(Func<Score, bool> query)

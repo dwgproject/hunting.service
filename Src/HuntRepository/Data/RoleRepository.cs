@@ -80,8 +80,6 @@ namespace HuntRepository.Data
 
         public RepositoryResult<Role> Find(Guid identifier)
         {
-
-            HuntContext context = null;
             try{
                 var found = context.Roles.Find(identifier);
                 return found != null ? 
@@ -91,7 +89,7 @@ namespace HuntRepository.Data
             }catch(Exception ex){
                 return new RepositoryResult<Role>(false, null);    
             }finally{
-                context?.Dispose();
+                
             }
 
         }
