@@ -14,14 +14,15 @@ namespace HuntRepository.Data
     {
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(QuarryRepository));
+        private string TAG = "RQ";
         public QuarryRepository(HuntContext context)
         {
             this.context = context;
             LoggerConfig.ReadConfiguration();
         }
-        public Result<Quarry> Add(Quarry quarry)
+        public RepositoryResult<Quarry> Add(Quarry quarry)
         {
-            var result = new Result<Quarry>(false, new Quarry());
+            var result = new RepositoryResult<Quarry>(false, new Quarry());
             IDbContextTransaction tx = null;
             try
             {
@@ -30,7 +31,7 @@ namespace HuntRepository.Data
                 quarry.Animal = context.Animals.FirstOrDefault(i=>i.Identifier == quarry.Animal.Identifier);
                 context.Quarries.Add(quarry);
                 context.SaveChanges();
-                result = new Result<Quarry>(true, quarry);
+                result = new RepositoryResult<Quarry>(true, quarry);
                 log.Info("Dodana quarry");
                 return result;
                 
@@ -44,8 +45,9 @@ namespace HuntRepository.Data
             }
         }
 
-        public void Delete(Guid identifier)
+        public RepositoryResult<string> Delete(Guid identifier)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var existQuarry = context.Quarries.Find(identifier);
             IDbContextTransaction tx = null;
             try{
@@ -54,29 +56,33 @@ namespace HuntRepository.Data
                 context.SaveChanges();
                 tx.Commit();
                 log.Info($"Usunięto{identifier}");
+                result = new RepositoryResult<string>(true,"",TAG);
+                return result;
             }
             catch(Exception ex){
                 log.Error(ex);
+                result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"03");
+                return result;
             }
             finally{
                 tx?.Dispose();
             }
         }
 
-        public Result<Quarry> Find(Guid identifier)
+        public RepositoryResult<Quarry> Find(Guid identifier)
         {
             throw new NotImplementedException();
         }
 
-        public Result<IEnumerable<Quarry>> Query(Func<Quarry, bool> query)
+        public RepositoryResult<IEnumerable<Quarry>> Query(Func<Quarry, bool> query)
         {
-            var result = new Result<IEnumerable<Quarry>>(false, new List<Quarry>());
+            var result = new RepositoryResult<IEnumerable<Quarry>>(false, new List<Quarry>());
             IDbContextTransaction tx = null;
             try
             {
                 tx = context.Database.BeginTransaction();
                 var resultQuery = context.Quarries.Where(x => query.Invoke(x));
-                return new Result<IEnumerable<Quarry>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<Quarry>>(true, resultQuery.AsEnumerable());
             }
             catch (Exception ex)
             {
@@ -87,23 +93,35 @@ namespace HuntRepository.Data
             }
         }
 
-        public void Update(Quarry quarry)
+        public RepositoryResult<string> Update(Quarry quarry)
         {
+            var result = new RepositoryResult<string>(false, "",TAG);
             var existQuarry = context.Quarries.FirstOrDefault(q=>q.Identifier == quarry.Identifier);
-            IDbContextTransaction tx = null;
-            try {
-                tx = context.Database.BeginTransaction();
-                existQuarry.Animal = context.Animals.FirstOrDefault(x => x.Identifier == quarry.Animal.Identifier) ?? existQuarry.Animal;
-                existQuarry.Amount = existQuarry.Amount-quarry.Amount;
-                context.SaveChanges();
-                tx.Commit();
+            if(existQuarry!=null){
+                IDbContextTransaction tx = null;
+                try {
+                    tx = context.Database.BeginTransaction();
+                    existQuarry.Animal = context.Animals.FirstOrDefault(x => x.Identifier == quarry.Animal.Identifier) ?? existQuarry.Animal;
+                    existQuarry.Amount = existQuarry.Amount-quarry.Amount;
+                    context.SaveChanges();
+                    tx.Commit();
+                    result = new RepositoryResult<string>(true,"",TAG);
+                    return result;
+                }
+                catch (Exception ex) { 
+                    log.Error(ex);
+                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"01");
+                    return result;
+                }
+                finally {
+                    tx?.Dispose();
+                }
             }
-            catch (Exception ex) { 
-                log.Error(ex);
+            else{
+                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                return result;
             }
-            finally {
-                tx?.Dispose();
-            }
+
         }
     }
 }

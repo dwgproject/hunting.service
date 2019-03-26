@@ -22,13 +22,13 @@ namespace Hunt.ServiceContext{
         public ServiceResult<string> Add(FullUser user)
         {   if (user == null || user.Login == null)
                 return ServiceResult<string>.Failed(string.Empty, check_user_empty_data);
-            Result<IEnumerable<Model.User>> queryResult = userRepository.Query(ux => ux.Login == user.Login);
+            RepositoryResult<IEnumerable<Model.User>> queryResult = userRepository.Query(ux => ux.Login == user.Login);
             if (!queryResult.IsSuccess)
                 return ServiceResult<string>.Failed(string.Empty, check_user_error);//tutaj error powinien przyjsc z repo
             if (queryResult.Payload.Any())
                 return ServiceResult<string>.Failed(string.Empty, check_user_failed);
 
-            Result<Model.User> result = userRepository.Add(user.ConverToUserRepository());
+            RepositoryResult<Model.User> result = userRepository.Add(user.ConverToUserRepository());
             if (!result.IsSuccess)
                 return ServiceResult<string>.Failed(string.Empty, string.Empty);//kod od repo
                 

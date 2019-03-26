@@ -16,6 +16,7 @@ namespace HuntRepository.Model
 
         private readonly HuntContext context;
         private readonly ILog log = LogManager.GetLogger(typeof(PartialHuntingRepository));
+        private string TAG = "RP";
 
         public PartialHuntingRepository(HuntContext context)
         {
@@ -23,24 +24,24 @@ namespace HuntRepository.Model
             LoggerConfig.ReadConfiguration();          
         }
 
-        public Result<PartialHunting> Add(PartialHunting user)
+        public RepositoryResult<PartialHunting> Add(PartialHunting user)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(Guid identifier)
+        public RepositoryResult<string> Delete(Guid identifier)
         {
             throw new NotImplementedException();
         }
 
-        public Result<PartialHunting> Find(Guid identifier)
+        public RepositoryResult<PartialHunting> Find(Guid identifier)
         {
             throw new NotImplementedException();
         }
 
-        public Result<PartialHunting> Finish(Guid identifier)
+        public RepositoryResult<PartialHunting> Finish(Guid identifier)
         {
-            var result = new Result<PartialHunting>(false, new PartialHunting());
+            var result = new RepositoryResult<PartialHunting>(false, new PartialHunting());
             var selectedPartialHunting = context.PartialHuntings.Find(identifier);
             IDbContextTransaction tx = null;
             try
@@ -49,7 +50,7 @@ namespace HuntRepository.Model
                 selectedPartialHunting.Status = Status.Finish;
                 context.SaveChanges();
                 tx.Commit();
-                return new Result<PartialHunting>(true, selectedPartialHunting);
+                return new RepositoryResult<PartialHunting>(true, selectedPartialHunting);
             }
             catch (Exception ex)
             {
@@ -62,14 +63,14 @@ namespace HuntRepository.Model
             }
         }
 
-        public Result<IEnumerable<PartialHunting>> Query(Func<PartialHunting, bool> query)
+        public RepositoryResult<IEnumerable<PartialHunting>> Query(Func<PartialHunting, bool> query)
         {
-            var result = new Result<IEnumerable<PartialHunting>>(false, new List<PartialHunting>());
+            var result = new RepositoryResult<IEnumerable<PartialHunting>>(false, new List<PartialHunting>());
             IDbContextTransaction tx = null;
             try {
                 tx = context.Database.BeginTransaction();
                 var resultQuary = context.PartialHuntings.Include(x=>x.Hunting).Where(ux => query.Invoke(ux));
-                return result = new Result<IEnumerable<PartialHunting>>(true, resultQuary.AsEnumerable());
+                return result = new RepositoryResult<IEnumerable<PartialHunting>>(true, resultQuary.AsEnumerable());
             }
             catch (Exception ex) {
                 log.Error(ex);
@@ -80,9 +81,9 @@ namespace HuntRepository.Model
             }
         }
 
-        public Result<PartialHunting> Start(Guid identifier)
+        public RepositoryResult<PartialHunting> Start(Guid identifier)
         {
-            var result = new Result<PartialHunting>(false, new PartialHunting());
+            var result = new RepositoryResult<PartialHunting>(false, new PartialHunting());
             var selectedPartialHunting = context.PartialHuntings.Find(identifier);
             IDbContextTransaction tx = null;
             try
@@ -91,7 +92,7 @@ namespace HuntRepository.Model
                 selectedPartialHunting.Status = Status.Activate;
                 context.SaveChanges();
                 tx.Commit();
-                return new Result<PartialHunting>(true, selectedPartialHunting);
+                return new RepositoryResult<PartialHunting>(true, selectedPartialHunting);
             }
             catch (Exception ex)
             {
@@ -103,7 +104,7 @@ namespace HuntRepository.Model
             }
         }
 
-        public void Update(PartialHunting user)
+        public RepositoryResult<string> Update(PartialHunting user)
         {
             throw new NotImplementedException();
         }

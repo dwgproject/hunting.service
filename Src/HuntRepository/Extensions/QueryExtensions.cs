@@ -7,21 +7,21 @@ using HuntRepository.Infrastructure;
 namespace HuntRepository.Extensions{
     public static class QueryExtensions{
 
-        public static Result<IEnumerable<User>> GetUsersByDate(this IUserRepository repository, DateTime from, DateTime to){
+        public static RepositoryResult<IEnumerable<User>> GetUsersByDate(this IUserRepository repository, DateTime from, DateTime to){
             
-            Result<IEnumerable<User>> result = repository.Query((ux) => ux.Issued > from && ux.Issued < to);
+            RepositoryResult<IEnumerable<User>> result = repository.Query((ux) => ux.Issued > from && ux.Issued < to);
             return result;
         }
 
-        public static Result<IEnumerable<User>> GetUsersByAuthentication(this IUserRepository repository, string login, string password){
+        public static RepositoryResult<IEnumerable<User>> GetUsersByAuthentication(this IUserRepository repository, string login, string password){
             return repository.Query((ux) => ux.Login == login && ux.Password == password);
         }
 
-        public static Result<User> GetUserByAuthetication(this IUserRepository repository, string login, string password){
+        public static RepositoryResult<User> GetUserByAuthetication(this IUserRepository repository, string login, string password){
             var resultQuery = repository.Query((ux) => ux.Login == login && ux.Password == password);
             if (resultQuery.IsSuccess && resultQuery.Payload.Count() ==1)
-                return new Result<User>(true, resultQuery.Payload.Single());
-            return new Result<User>(false, null);
+                return new RepositoryResult<User>(true, resultQuery.Payload.Single());
+            return new RepositoryResult<User>(false, null);
         }
     }
 }

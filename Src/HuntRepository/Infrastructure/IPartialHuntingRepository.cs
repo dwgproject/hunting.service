@@ -5,7 +5,7 @@ namespace HuntRepository.Infrastructure
 {
     public interface IPartialHuntingRepository: IModuleRepository<PartialHunting, PartialHunting, Guid>
     {
-         Result<PartialHunting> Start(Guid identifier);
-         Result<PartialHunting> Finish(Guid identifier);
+         RepositoryResult<PartialHunting> Start(Guid identifier);
+         RepositoryResult<PartialHunting> Finish(Guid identifier);
     }
 }
