@@ -33,7 +33,7 @@ namespace Hunt.ServiceContext
 
         public ServiceResult<Guid> SignIn(Authentication authentication)
         {
-            Result<Model.User> getUserByAutheticationResult = repository.GetUserByAuthetication(authentication.Login, authentication.Password);            
+            var getUserByAutheticationResult = repository.GetUserByAuthetication(authentication.Login, authentication.Password);            
             return getUserByAutheticationResult.IsSuccess ? 
                     ServiceResult<Guid>.Success(getUserByAutheticationResult.Payload.Identifier, "code") :
                         ServiceResult<Guid>.Failed(Guid.Empty,"code");
