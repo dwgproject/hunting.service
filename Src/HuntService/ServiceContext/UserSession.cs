@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using Hunt.ServiceContext.Exceptions;
 
 namespace Hunt.ServiceContext.ServiceSession{
@@ -10,6 +11,7 @@ namespace Hunt.ServiceContext.ServiceSession{
         public UserSession()
         {
             sessions = new ConcurrentDictionary<Guid, Session>();
+            Task.Run(() => CheckSessions());
         }
 
         public void AddOrUpdate(Session session)
@@ -45,6 +47,17 @@ namespace Hunt.ServiceContext.ServiceSession{
                 return sessions[identifier];
             }
             return null;
+        }
+        //ticka ustawia tick (http request od klienta) jeżeli lastTisk jest większy niż 20 minut to usuwam
+        private void CheckSessions(){
+            DateTime now = DateTime.Now;
+            foreach (var session in sessions.ToArray()){
+                Session current = session.Value;
+                TimeSpan delta = now.Subtract(current.LastTick);
+                if (delta.Minutes > 20)
+                    Close(session.Key);
+            }
+            Task.Delay(5000);
         }
     }
 }
