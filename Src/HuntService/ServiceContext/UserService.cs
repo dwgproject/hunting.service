@@ -37,23 +37,39 @@ namespace Hunt.ServiceContext{
 
         public ServiceResult<IEnumerable<User>> All()
         {
-            throw new NotImplementedException();
+            RepositoryResult<IEnumerable<Model.User>> queryResult = userRepository.Query(qx => { return true; });
+            if (queryResult.IsSuccess){
+                IList<User> users = new List<User>();
+                foreach (Model.User user in  queryResult.Payload)
+                    users.Add(user.ConverToUserService());
+                return ServiceResult<IEnumerable<User>>.Failed(users, queryResult.Code); 
+            }
+            return ServiceResult<IEnumerable<User>>.Failed(Enumerable.Empty<User>(), queryResult.Code);
         }
 
         public ServiceResult<string> Delete(Guid identifier)
         {
-            userRepository.Delete(identifier);
-            return ServiceResult<string>.Success(string.Empty, "code");
+            RepositoryResult<string> deleteResult = userRepository.Delete(identifier);
+            return deleteResult.IsSuccess ? 
+                        ServiceResult<string>.Success(deleteResult.Payload, deleteResult.Code) : 
+                            ServiceResult<string>.Failed(deleteResult.Payload, deleteResult.Code);
         }
 
         public ServiceResult<User> Get(Guid identifer)
         {
-            throw new NotImplementedException();
+            RepositoryResult<Model.User> findResult = userRepository.Find(identifer);
+            return findResult.IsSuccess ? 
+                        ServiceResult<User>.Success(findResult.Payload.ConverToUserService() ,findResult.Code) : 
+                            ServiceResult<User>.Failed(findResult.Payload.ConverToUserService(),findResult.Code);
         }
 
-        public ServiceResult<User> Update(User user)
+        public ServiceResult<User> Update(FullUser user)
         {
-            throw new NotImplementedException();
+            throw new ApplicationException();
+            // RepositoryResult<string> updateResult = userRepository.Update(user.ConverToUserRepository());
+            // return updateResult.IsSuccess ? 
+            //             ServiceResult<User>.Success(updateResult.Payload, updateResult.Code) : 
+            //                 ServiceResult<string>.Failed(updateResult.Payload, updateResult.Code);
         }
     }
 }

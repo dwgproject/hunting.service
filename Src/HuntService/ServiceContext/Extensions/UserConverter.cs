@@ -13,8 +13,8 @@ namespace Hunt.ServiceContext.Extensions{
                 Login = fullUser.Login
             };
         }
-
-        public static User ConverToUserService(this User user, Hunt.Model.User model){
+        
+        public static User ConverToUserService(this Hunt.Model.User model){
             return new User(){
                 Name = model.Name,
                 Surname = model.Surname,

@@ -26,8 +26,8 @@ namespace Hunt.ServiceContext{
 
         public ServiceResult<string> DeleteRole(Guid identifier)
         {
-            roleRepository.Delete(identifier);
-            Result<Model.Role> findResult = roleRepository.Find(identifier);
+            roleRepository.Delete(identifier); //błąd poprawić
+            var findResult = roleRepository.Find(identifier);
             return findResult.IsSuccess ? ServiceResult<string>.Success(string.Empty, "cs3") : ServiceResult<string>.Failed(string.Empty, "cs4");
         }
 
