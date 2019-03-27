@@ -122,9 +122,9 @@ namespace Hunt.Data{
             }
         }
 
-        public RepositoryResult<string> Update(User user)
+        public RepositoryResult<User> Update(User user)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            var result = new RepositoryResult<User>(false, null, TAG);
             var tmpUser = context.Users.Find(user.Identifier);
             if(tmpUser!=null){
                 IDbContextTransaction tx = null;
@@ -138,12 +138,12 @@ namespace Hunt.Data{
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Update usera:{user} ");
-                    result = new RepositoryResult<string>(true,"",TAG);
+                    result = new RepositoryResult<User>(true,tmpUser);
                     return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało update usera:{user}, {ex}");
-                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"01");
+                    result = new RepositoryResult<User>(false,null,TAG+"01");
                     return result;
                 }
                 finally{
@@ -151,7 +151,7 @@ namespace Hunt.Data{
                 }
             }
             else{
-                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                result = new RepositoryResult<User>(false,null, TAG+"02");
                 return result;
             }
         }

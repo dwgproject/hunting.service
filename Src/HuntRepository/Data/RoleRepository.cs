@@ -80,8 +80,6 @@ namespace HuntRepository.Data
 
         public RepositoryResult<Role> Find(Guid identifier)
         {
-
-            HuntContext context = null;
             try{
                 var found = context.Roles.Find(identifier);
                 return found != null ? 
@@ -91,7 +89,7 @@ namespace HuntRepository.Data
             }catch(Exception ex){
                 return new RepositoryResult<Role>(false, null);    
             }finally{
-                context?.Dispose();
+                
             }
 
         }
@@ -113,9 +111,9 @@ namespace HuntRepository.Data
             }
         }
 
-        public RepositoryResult<string> Update(Role role)
+        public RepositoryResult<Role> Update(Role role)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            var result = new RepositoryResult<Role>(false, null,TAG);
             var tmpRole = context.Roles.Find(role.Identifier);
             if(tmpRole!=null){
                 IDbContextTransaction tx = null;
@@ -125,12 +123,12 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano role:{role.Name} ");
-                    result = new RepositoryResult<string>(true,"",TAG);
+                    result = new RepositoryResult<Role>(true,tmpRole,TAG);
                     return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało update usera:{role.Name}, {ex}");
-                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"01");
+                    result = new RepositoryResult<Role>(false,null,TAG+"01");
                     return result;
                 }
                 finally{
@@ -138,7 +136,7 @@ namespace HuntRepository.Data
                 }
             }
             else{
-                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                result = new RepositoryResult<Role>(false,null, TAG+"02");
                 return result;
             }
         }

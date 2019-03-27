@@ -36,7 +36,18 @@ namespace HuntRepository.Model
 
         public RepositoryResult<PartialHunting> Find(Guid identifier)
         {
-            throw new NotImplementedException();
+            try{
+                var found = context.PartialHuntings.Include(h=>h.Hunting).Include(s=>s.Status).Include(p=>p.PartialHunters).FirstOrDefault(i=>i.Identifier==identifier);
+                return found != null ?
+                                new RepositoryResult<PartialHunting>(true, found):
+                                new RepositoryResult<PartialHunting>(false, null);
+                            
+            }
+            catch(Exception ex){
+                log.Error($"{ex}");
+                return new RepositoryResult<PartialHunting>(false, null);
+            }
+            finally{}
         }
 
         public RepositoryResult<PartialHunting> Finish(Guid identifier)
@@ -104,7 +115,7 @@ namespace HuntRepository.Model
             }
         }
 
-        public RepositoryResult<string> Update(PartialHunting user)
+        public RepositoryResult<PartialHunting> Update(PartialHunting user)
         {
             throw new NotImplementedException();
         }

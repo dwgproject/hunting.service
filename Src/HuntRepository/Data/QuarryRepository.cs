@@ -6,6 +6,7 @@ using Hunt.Data;
 using Hunt.Model;
 using HuntRepository.Infrastructure;
 using log4net;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HuntRepository.Data
@@ -71,7 +72,18 @@ namespace HuntRepository.Data
 
         public RepositoryResult<Quarry> Find(Guid identifier)
         {
-            throw new NotImplementedException();
+            try{
+                var found = context.Quarries.Include(a=>a.Animal).FirstOrDefault(i=>i.Identifier == identifier);
+                return found != null ?
+                                new RepositoryResult<Quarry>(true, found):
+                                new RepositoryResult<Quarry>(false, null);
+                            
+            }
+            catch(Exception ex){
+                log.Error($"{ex}");
+                return new RepositoryResult<Quarry>(false, null);
+            }
+            finally{}
         }
 
         public RepositoryResult<IEnumerable<Quarry>> Query(Func<Quarry, bool> query)
@@ -93,9 +105,9 @@ namespace HuntRepository.Data
             }
         }
 
-        public RepositoryResult<string> Update(Quarry quarry)
+        public RepositoryResult<Quarry> Update(Quarry quarry)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            var result = new RepositoryResult<Quarry>(false, null,TAG);
             var existQuarry = context.Quarries.FirstOrDefault(q=>q.Identifier == quarry.Identifier);
             if(existQuarry!=null){
                 IDbContextTransaction tx = null;
@@ -105,12 +117,12 @@ namespace HuntRepository.Data
                     existQuarry.Amount = existQuarry.Amount-quarry.Amount;
                     context.SaveChanges();
                     tx.Commit();
-                    result = new RepositoryResult<string>(true,"",TAG);
+                    result = new RepositoryResult<Quarry>(true,existQuarry,TAG);
                     return result;
                 }
                 catch (Exception ex) { 
                     log.Error(ex);
-                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"01");
+                    result = new RepositoryResult<Quarry>(false,null,TAG+"01");
                     return result;
                 }
                 finally {
@@ -118,7 +130,7 @@ namespace HuntRepository.Data
                 }
             }
             else{
-                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                result = new RepositoryResult<Quarry>(false,null, TAG+"02");
                 return result;
             }
 

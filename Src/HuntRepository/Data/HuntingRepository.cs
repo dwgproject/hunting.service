@@ -106,7 +106,18 @@ namespace HuntRepository.Data
 
         public RepositoryResult<Hunting> Find(Guid identifier)
         {
-            throw new NotImplementedException();
+                try{
+                var found = context.Huntings.Include(l=>l.Leader).Include(s=>s.Status).Include(u=>u.Users).Include(q=>q.Quarries).Include(p=>p.PartialHuntings).FirstOrDefault(i=>i.Identifier==identifier);
+                return found != null ?
+                                new RepositoryResult<Hunting>(true, found):
+                                new RepositoryResult<Hunting>(false, null);
+                            
+            }
+            catch(Exception ex){
+                log.Error($"{ex}");
+                return new RepositoryResult<Hunting>(false, null);
+            }
+            finally{}
         }
 
         public RepositoryResult<Hunting> Finish(Hunting hunting)
@@ -155,9 +166,9 @@ namespace HuntRepository.Data
 
         }
 
-        public RepositoryResult<string> Update(Hunting hunting)
+        public RepositoryResult<Hunting> Update(Hunting hunting)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            var result = new RepositoryResult<Hunting>(false, null,TAG);
             var tmpHunting = context.Huntings.Find(hunting.Identifier);
             if(tmpHunting!=null && tmpHunting.Status!=Status.Finish)
             {
@@ -168,12 +179,12 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano polowanie {hunting}");
-                    result = new RepositoryResult<string>(true,"",TAG);
+                    result = new RepositoryResult<Hunting>(true,tmpHunting,TAG);
                     return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się zaktuaizować polowania {hunting}, {ex}");
-                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"01");
+                    result = new RepositoryResult<Hunting>(false,null,TAG+"01");
                     return result;
                 }
                 finally{
@@ -181,7 +192,7 @@ namespace HuntRepository.Data
                 }
             }
             else{
-                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                result = new RepositoryResult<Hunting>(false,null, TAG+"02");
                 return result;
             }
         }
