@@ -115,9 +115,9 @@ namespace HuntRepository.Data
 
         }
 
-        public RepositoryResult<string> Update(Score score)
+        public RepositoryResult<Score> Update(Score score)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            var result = new RepositoryResult<Score>(false, null,TAG);
             var tmpScore = context.Scores.Find(score.Identifier);
             if(tmpScore!=null){
                 IDbContextTransaction tx = null;
@@ -128,12 +128,12 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano rezultat {score}");
-                    result = new RepositoryResult<string>(true,"",TAG);
+                    result = new RepositoryResult<Score>(true,tmpScore,TAG);
                     return result;
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało sie zaktualizować rezultatu {score}, {ex}");
-                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"01");
+                    result = new RepositoryResult<Score>(false,null,TAG+"01");
                     return result;
                 }
                 finally{
@@ -141,7 +141,7 @@ namespace HuntRepository.Data
                 }
             }
             else{
-                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                result = new RepositoryResult<Score>(false,null, TAG+"02");
                 return result;
             }
         }

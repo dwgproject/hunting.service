@@ -115,7 +115,7 @@ namespace HuntRepository.Model
             }
         }
 
-        public RepositoryResult<string> Update(PartialHunting user)
+        public RepositoryResult<PartialHunting> Update(PartialHunting user)
         {
             throw new NotImplementedException();
         }

@@ -105,9 +105,9 @@ namespace HuntRepository.Data
             }
         }
 
-        public RepositoryResult<string> Update(Quarry quarry)
+        public RepositoryResult<Quarry> Update(Quarry quarry)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            var result = new RepositoryResult<Quarry>(false, null,TAG);
             var existQuarry = context.Quarries.FirstOrDefault(q=>q.Identifier == quarry.Identifier);
             if(existQuarry!=null){
                 IDbContextTransaction tx = null;
@@ -117,12 +117,12 @@ namespace HuntRepository.Data
                     existQuarry.Amount = existQuarry.Amount-quarry.Amount;
                     context.SaveChanges();
                     tx.Commit();
-                    result = new RepositoryResult<string>(true,"",TAG);
+                    result = new RepositoryResult<Quarry>(true,existQuarry,TAG);
                     return result;
                 }
                 catch (Exception ex) { 
                     log.Error(ex);
-                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"01");
+                    result = new RepositoryResult<Quarry>(false,null,TAG+"01");
                     return result;
                 }
                 finally {
@@ -130,7 +130,7 @@ namespace HuntRepository.Data
                 }
             }
             else{
-                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                result = new RepositoryResult<Quarry>(false,null, TAG+"02");
                 return result;
             }
 

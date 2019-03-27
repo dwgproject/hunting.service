@@ -110,9 +110,9 @@ namespace HuntRepository.Data
             }
         }
 
-        public RepositoryResult<string> Update(Animal animal)
+        public RepositoryResult<Animal> Update(Animal animal)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            var result = new RepositoryResult<Animal>(false, null,TAG);
             var tmpAnimal = context.Animals.Find(animal.Identifier);
             if(tmpAnimal!=null){
                 IDbContextTransaction tx = null;
@@ -122,12 +122,12 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano zwierzyne {animal}");
-                    result = new RepositoryResult<string>(true,"",TAG);
+                    result = new RepositoryResult<Animal>(true,tmpAnimal,TAG);
                     return result;
                 }
                 catch(Exception ex){
                     log.Error($"NIe powiodła się aktualizacja {animal}, {ex}");
-                    result = new RepositoryResult<string>(false, ex.Message.ToString(), TAG+"01");
+                    result = new RepositoryResult<Animal>(false, null, TAG+"01");
                     return result;
                 }
                 finally{
@@ -135,7 +135,7 @@ namespace HuntRepository.Data
                 }
             }
             else{
-                result = new RepositoryResult<string>(false, "", TAG+"01");
+                result = new RepositoryResult<Animal>(false,null, TAG+"02");
                 return result;
             }
         }

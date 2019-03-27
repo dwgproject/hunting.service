@@ -6,7 +6,7 @@ namespace HuntRepository.Infrastructure{
 
         RepositoryResult<TResult> Add(TModelParam user);
         RepositoryResult<string> Delete(TIdentifierParam identifier);
-        RepositoryResult<string> Update(TModelParam user);
+        RepositoryResult<TResult> Update(TModelParam user);
         RepositoryResult<TResult> Find(TIdentifierParam identifier);
         RepositoryResult<IEnumerable<TResult>> Query(Func<TModelParam, bool> query);
     }

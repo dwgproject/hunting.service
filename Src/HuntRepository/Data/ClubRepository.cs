@@ -108,9 +108,9 @@ namespace HuntRepository.Data
             }
         }
 
-        public RepositoryResult<string> Update(Club club)
+        public RepositoryResult<Club> Update(Club club)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            var result = new RepositoryResult<Club>(false, null,TAG);
             var tmpClub = context.Clubs.Find(club.Identifier);
             if(tmpClub!=null){
                 IDbContextTransaction tx = null;
@@ -120,13 +120,13 @@ namespace HuntRepository.Data
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano koło łowieckie {club}");
-                    result = new RepositoryResult<string>(true,"",TAG);
+                    result = new RepositoryResult<Club>(true,tmpClub,TAG);
                     return result;
 
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się zaktualizować koła łowieckiego {club}, {ex}");
-                    result = new RepositoryResult<string>(false, ex.Message.ToString(),TAG+"01");
+                    result = new RepositoryResult<Club>(false,null,TAG+"01");
                     return result;
                 }
                 finally{
@@ -134,7 +134,7 @@ namespace HuntRepository.Data
                 }
             }
             else{
-                result = new RepositoryResult<string>(false,"Object not exist", TAG+"02");
+                result = new RepositoryResult<Club>(false,null, TAG+"02");
                 return result;
             }
         }
