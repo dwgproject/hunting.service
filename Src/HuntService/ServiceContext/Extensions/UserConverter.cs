@@ -23,5 +23,16 @@ namespace Hunt.ServiceContext.Extensions{
             };
         }
 
+        public static FullUser ConverToFullUserService(this Hunt.Model.User model){
+            return new FullUser(){
+                Name = model.Name,
+                Surname = model.Surname,
+                Email = model.Email,
+                Identifier = model.Identifier,
+                Login = model.Login,
+                Password = model.Password,
+            };
+        }
+
     }
 }

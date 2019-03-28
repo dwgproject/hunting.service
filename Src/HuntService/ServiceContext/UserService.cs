@@ -60,16 +60,15 @@ namespace Hunt.ServiceContext{
             RepositoryResult<Model.User> findResult = userRepository.Find(identifer);
             return findResult.IsSuccess ? 
                         ServiceResult<User>.Success(findResult.Payload.ConverToUserService() ,findResult.Code) : 
-                            ServiceResult<User>.Failed(findResult.Payload.ConverToUserService(),findResult.Code);
+                            ServiceResult<User>.Failed(new User() ,findResult.Code);
         }
 
-        public ServiceResult<User> Update(FullUser user)
+        public ServiceResult<FullUser> Update(FullUser user)
         {
-            throw new ApplicationException();
-            // RepositoryResult<string> updateResult = userRepository.Update(user.ConverToUserRepository());
-            // return updateResult.IsSuccess ? 
-            //             ServiceResult<User>.Success(updateResult.Payload, updateResult.Code) : 
-            //                 ServiceResult<string>.Failed(updateResult.Payload, updateResult.Code);
+            RepositoryResult<Model.User> updateResult = userRepository.Update(user.ConverToUserRepository());
+            return updateResult.IsSuccess ? 
+                        ServiceResult<FullUser>.Success(updateResult.Payload.ConverToFullUserService(), updateResult.Code) : 
+                            ServiceResult<FullUser>.Failed(null, updateResult.Code);
         }
     }
 }
