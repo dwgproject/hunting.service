@@ -10,6 +10,6 @@ namespace Hunt.ServiceContext{
         ServiceResult<IEnumerable<User>> All();
         ServiceResult<string> Delete(Guid identifier);
         ServiceResult<User> Get(Guid identifer);
-        ServiceResult<User> Update(FullUser user);
+        ServiceResult<FullUser> Update(FullUser user);
     }
 }
