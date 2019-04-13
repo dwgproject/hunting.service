@@ -13,8 +13,8 @@ namespace Hunt.Model
         public int Number { get; set; }
         [IgnoreDataMember]
         [ForeignKey("HuntingIdentifier")]
-        public Hunting Hunting { get;set; }
-        public Status Status { get;set; }
-        public ICollection<PartialHuntersList> PartialHunters {get; set;}
+        public virtual Hunting Hunting { get;set; }
+        public virtual Status Status { get;set; }
+        public virtual ICollection<PartialHuntersList> PartialHunters {get; set;}
     }
 }
