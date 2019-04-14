@@ -22,7 +22,7 @@ namespace Hunt.Model
         [Required]
         [MinLength(8)]
         public string Password { get; set; }
-        public Role Role { get; set; }
-        public ICollection<UserHunting> Huntings { get; set; }
+        public virtual Role Role { get; set; }
+        public virtual ICollection<UserHunting> Huntings { get; set; }
     }
 }
