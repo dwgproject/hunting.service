@@ -4,6 +4,7 @@ using System.Linq;
 using Hunt.Configuration;
 using Hunt.Data;
 using Hunt.Model;
+using HuntRepository.Extensions;
 using HuntRepository.Infrastructure;
 using log4net;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -101,7 +102,10 @@ namespace HuntRepository.Data
             IDbContextTransaction tx = null;
             try{
                 //context = new HuntContext();
-                var resultQuery = context.Roles.Where(ux => query.Invoke(ux));                
+                var resultQuery = context.Roles.Where(ux => query.Invoke(ux));
+                if(!QueryHelper.IsAny(resultQuery)){
+                    return result;
+                }                
                 return new RepositoryResult<IEnumerable<Role>>(true, resultQuery.AsEnumerable());
             }catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło sie {query}, {ex}");

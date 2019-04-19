@@ -4,10 +4,12 @@ using System.Linq;
 using Hunt.Responses;
 using Hunt.ServiceContext;
 using Hunt.ServiceContext.Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hunt.Controllers
 {
+
     public class ConfigurationController : ControllerBase
     {
         private readonly IConfigurationService configuration;
@@ -31,7 +33,7 @@ namespace Hunt.Controllers
         }
 
         [HttpDelete]
-        public JsonResult DeleteRole([FromBody]Guid identifier)
+        public JsonResult DeleteRole(Guid identifier)
         {
             var queryResult = configuration.DeleteRole(identifier);
             return new JsonResult(Response<string>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
