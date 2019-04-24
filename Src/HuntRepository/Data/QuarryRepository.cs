@@ -32,6 +32,7 @@ namespace HuntRepository.Data
                 quarry.Animal = context.Animals.FirstOrDefault(i=>i.Identifier == quarry.Animal.Identifier);
                 context.Quarries.Add(quarry);
                 context.SaveChanges();
+                tx.Commit();
                 result = new RepositoryResult<Quarry>(true, quarry);
                 log.Info("Dodana quarry");
                 return result;
