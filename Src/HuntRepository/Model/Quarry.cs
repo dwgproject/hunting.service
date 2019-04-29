@@ -1,8 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Hunt.Model;
 
-namespace Hunt.Model
+namespace GravityZero.HuntingSupport.Repository.Model
 {
     public class Quarry
     {

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
-namespace Hunt.Model
+namespace GravityZero.HuntingSupport.Repository.Model
 {
     public class PartialHunting
     {

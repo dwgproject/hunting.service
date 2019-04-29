@@ -1,6 +1,7 @@
-namespace Hunt.Model
+namespace GravityZero.HuntingSupport.Repository.Model
 {
-    public enum Status{
+    public enum Status
+    {
         Create,
         Activate,
         Finish

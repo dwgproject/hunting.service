@@ -1,8 +1,8 @@
 using System;
 
-namespace Hunt.ServiceContext.Domain{
-
-    public class Role
+namespace GravityZero.HuntingSupport.Service.Context.Domain
+{
+    public class RoleServiceModel
     {
         public Guid Identifier { get; set; } 
         public string Name { get; set; }

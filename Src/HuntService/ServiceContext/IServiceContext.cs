@@ -1,8 +1,9 @@
 using System;
-using Hunt.ServiceContext.Result;
-using Hunt.ServiceContext.Domain;
+using GravityZero.HuntingSupport.Service.Context;
+using GravityZero.HuntingSupport.Service.Context.Domain;
 
-namespace Hunt.ServiceContext{
+namespace GravityZero.HuntingSupport.Service.Session
+{
     public interface IServiceContext
     {
         //ServiceResult<string> SignUp(FullUser user);//zapisz się

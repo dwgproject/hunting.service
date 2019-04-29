@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Xml;
 using log4net;
 
-namespace Hunt.Configuration
+namespace GravityZero.HuntingSupport.Repository.Configuration
 {
     public static class LoggerConfig
     {

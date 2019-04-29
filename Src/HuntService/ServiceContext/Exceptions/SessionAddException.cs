@@ -1,6 +1,6 @@
 using System;
 
-namespace Hunt.ServiceContext.Exceptions{
+namespace GravityZero.HuntingSupport.Service.Context.Exceptions{
     public class SessionAddException : Exception{
         public SessionAddException(string message): base(message)
         {

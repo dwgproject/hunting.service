@@ -1,26 +1,20 @@
-
-using Hunt.ServiceContext;
-using Hunt.ServiceContext.Domain;
-using Hunt.ServiceContext.Exceptions;
-using Hunt.ServiceContext.Extensions;
-using Hunt.ServiceContext.Result;
-using Hunt.ServiceContext.ServiceSession;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using GravityZero.HuntingSupport.Repository.Infrastructure;
+using GravityZero.HuntingSupport.Service.Context.Domain;
+using GravityZero.HuntingSupport.Service.Context.Exceptions;
+using GravityZero.HuntingSupport.Service.Session;
 using HuntRepository.Extensions;
-using System.Linq;
-using HuntRepository.Infrastructure;
 
-namespace Hunt.ServiceContext
+namespace GravityZero.HuntingSupport.Service.Context
 {
-    public class Context : IServiceContext
+    public class ServiceContext : IServiceContext
     {
         private static readonly string session_closed_message = "Session has been closed.";
         private static readonly string user_added_message = "User has been added.";
 
-        private HuntRepository.Infrastructure.IUserRepository repository;
+        private IUserRepository repository;
         private IUserSession session;
-        public Context(HuntRepository.Infrastructure.IRepository repository)
+        public ServiceContext(IRepository repository)
         {
             this.repository = repository.UserRepository;
             this.session = new UserSession();
@@ -35,7 +29,7 @@ namespace Hunt.ServiceContext
         {
             var getUserByAutheticationResult = repository.GetUserByAuthetication(authentication.Login, authentication.Password);   
             if (getUserByAutheticationResult.IsSuccess){
-                var newSession = new Session(getUserByAutheticationResult.Payload.Identifier, DateTime.Now);
+                var newSession = new SessionUnit(getUserByAutheticationResult.Payload.Identifier, DateTime.Now);
                 session.AddOrUpdate(newSession);
             }
             return getUserByAutheticationResult.IsSuccess ? 
@@ -50,7 +44,7 @@ namespace Hunt.ServiceContext
             }catch (SessionCloseException ex){
                 return ServiceResult<string>.Failed(ex.GetBaseException().Message,"code");
             }
-            return ServiceResult<string>.Success(Context.session_closed_message, "code");
+            return ServiceResult<string>.Success(ServiceContext.session_closed_message, "code");
         }
     }
 }

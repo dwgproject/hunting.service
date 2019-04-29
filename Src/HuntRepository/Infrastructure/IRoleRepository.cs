@@ -1,7 +1,7 @@
 using System;
-using Hunt.Model;
+using GravityZero.HuntingSupport.Repository.Model;
 
-namespace HuntRepository.Infrastructure
+namespace GravityZero.HuntingSupport.Repository.Infrastructure
 {
     public interface IRoleRepository: IModuleRepository<Role, Role, Guid>
     {
