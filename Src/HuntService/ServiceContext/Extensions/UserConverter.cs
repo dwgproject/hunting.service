@@ -3,8 +3,8 @@ using GravityZero.HuntingSupport.Service.Context.Domain;
 
 namespace GravityZero.HuntingSupport.Service.Context.Extensions
 {
-    public static class UserConverter{
-
+    public static class UserConverter
+    {
         public static User ConverToUserRepository(this FullUser fullUser){
             return new User(){
                 Identifier = fullUser.Identifier,
@@ -12,7 +12,8 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
                 Surname = fullUser.Surname,
                 Email = fullUser.Email,
                 Password = fullUser.Password,
-                Login = fullUser.Login
+                Login = fullUser.Login,
+                Role = fullUser.Role.ConvertToModel()
             };
         }
         
@@ -35,6 +36,5 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
                 Password = model.Password,
             };
         }
-
     }
 }

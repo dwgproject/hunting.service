@@ -30,6 +30,8 @@ namespace GravityZero.HuntingSupport.Service.Main
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IRoleRepository, RoleRepository>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IRepository, GravityZero.HuntingSupport.Repository.Repository>();
             services.AddMvc(options => {
                 options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);            
