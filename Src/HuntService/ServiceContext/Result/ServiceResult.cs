@@ -1,4 +1,4 @@
-namespace Hunt.ServiceContext.Result{
+namespace GravityZero.HuntingSupport.Service.Context{
 
     public class ServiceResult<TResult>{
         public bool IsSuccess {get; private set;}
@@ -20,8 +20,4 @@ namespace Hunt.ServiceContext.Result{
             return new ServiceResult<TResult>(false, payload, code);
         }
     }
-
-    // public class GetServiceDataResult<TPayload> : ServiceResult<TPayload>{
-
-    // }
 }

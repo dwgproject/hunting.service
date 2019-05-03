@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hunt.Responses{
+namespace GravityZero.HuntingSupport.Service.Response
+{
     public class MessagePayloadResponse
     {
         public string Message { get; private set; }

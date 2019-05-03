@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using System.Threading.Tasks;
 using System;
 using System.IO;
-using Hunt.Model;
 
-namespace Hunt.Tools{
+namespace GravityZero.HuntingSupport.Service.Tools
+{
     public class RawJsonBodyInputFormatter : InputFormatter{
         public RawJsonBodyInputFormatter()
         {   
@@ -27,3 +27,5 @@ namespace Hunt.Tools{
         }
     }
 }
+//GravityZero.
+//GravityZero.Hunting.Service.Commands

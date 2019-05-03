@@ -1,7 +1,7 @@
+using GravityZero.HuntingSupport.Repository.Model;
 using Microsoft.EntityFrameworkCore;
-using Hunt.Model;
 
-namespace Hunt.Data
+namespace GravityZero.HuntingSupport.Repository
 {
     public class HuntContext : DbContext{
 

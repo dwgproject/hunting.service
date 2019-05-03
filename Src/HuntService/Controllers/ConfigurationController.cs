@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Hunt.Responses;
-using Hunt.ServiceContext;
-using Hunt.ServiceContext.Domain;
+using GravityZero.HuntingSupport.Service.Context;
+using GravityZero.HuntingSupport.Service.Context.Domain;
+using GravityZero.HuntingSupport.Service.Response;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hunt.Controllers
+namespace GravityZero.Hunting.Service.Controllers
 {
     public class ConfigurationController : ControllerBase
     {
@@ -20,21 +19,21 @@ namespace Hunt.Controllers
         public JsonResult GetAllRoles()
         {
             var queryResult = configuration.GetRoles();
-            return new JsonResult(Response<IEnumerable<Role>>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
+            return new JsonResult(ServiceResponse<IEnumerable<RoleServiceModel>>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
         }
 
         [HttpPost]
-        public JsonResult AddRole([FromBody]Role role)
+        public JsonResult AddRole([FromBody]RoleServiceModel role)
         {
             var queryResult = configuration.AddRole(role);
-            return new JsonResult(Response<string>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
+            return new JsonResult(ServiceResponse<string>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
         }
 
         [HttpDelete]
         public JsonResult DeleteRole([FromBody]Guid identifier)
         {
             var queryResult = configuration.DeleteRole(identifier);
-            return new JsonResult(Response<string>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
+            return new JsonResult(ServiceResponse<string>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
         }
     }
 }

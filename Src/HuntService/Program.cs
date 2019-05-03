@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore;
+﻿using GravityZero.HuntingSupport.Service.Main;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace HuntingHelperWebService
+namespace GravityZero.HuntingSupport.Service
 {
     public class Program
     {

@@ -4,17 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using Hunt.ServiceContext;
-using Hunt.Data;
 using Hunt.Eventing;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Hunt.Tools;
+using GravityZero.HuntingSupport.Repository;
+using GravityZero.HuntingSupport.Repository.Infrastructure;
+using GravityZero.HuntingSupport.Service.Session;
+using GravityZero.HuntingSupport.Service.Context;
+using GravityZero.HuntingSupport.Service.Tools;
 
-using HuntRepository.Infrastructure;
-using HuntRepository.Data;
-
-namespace HuntingHelperWebService
+namespace GravityZero.HuntingSupport.Service.Main
 {
     public class Startup
     {
@@ -29,10 +26,12 @@ namespace HuntingHelperWebService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<HuntContext>(options => options.UseLazyLoadingProxies().UseSqlServer(Configuration.GetValue<string>("ConnectionString:DefaultConnection")));
-            services.AddTransient<IServiceContext, Context>();
+            services.AddTransient<IServiceContext, ServiceContext>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IRoleRepository, RoleRepository>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IRepository, GravityZero.HuntingSupport.Repository.Repository>();
             services.AddMvc(options => {
                 options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);            
@@ -65,24 +64,3 @@ namespace HuntingHelperWebService
         }
     }
 }
-
-//Configuration.GetValue<string>("ConnectionString:DefaultConnection"))
-            // services.AddDbContext<HuntContext>(options =>
-            //     options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=hunting;Trusted_Connection=True;MultipleActiveResultSets=true"));
-
-
-
-
-// DbInitializer.Ini
-// using (var serviceScope = app.ApplicationServices.CreateScope())
-// {
-//     HuntContext huntContext = serviceScope.ServiceProvider.GetService<HuntContext>();
-//     huntContext.Database.EnsureCreated();       
-// }
-
-
-            // using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            // {
-            //     var context = serviceScope.ServiceProvider.GetRequiredService<HuntContext>();
-            //     context.Database.EnsureCreated();
-            // }

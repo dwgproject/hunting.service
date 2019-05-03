@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Hunt.Model
+namespace GravityZero.HuntingSupport.Repository.Model
 {
-    public class User{
+    public class User
+    {
         
         [Key]
         public Guid Identifier { get; set; }

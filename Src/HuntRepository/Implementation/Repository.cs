@@ -1,6 +1,7 @@
-using HuntRepository.Infrastructure;
+using GravityZero.HuntingSupport.Repository.Infrastructure;
 
-namespace Hunt.Data{
+namespace GravityZero.HuntingSupport.Repository
+{
     public class Repository : IRepository
     {
         public IUserRepository UserRepository { get; private set; }

@@ -1,4 +1,5 @@
-namespace HuntRepository.Infrastructure{
+namespace GravityZero.HuntingSupport.Repository.Infrastructure
+{
     public class RepositoryResult<TData> {
 
         public bool IsSuccess { get; private set; }

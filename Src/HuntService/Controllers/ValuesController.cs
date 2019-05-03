@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hunt.Data;
+using GravityZero.HuntingSupport.Repository;
+using GravityZero.HuntingSupport.Repository.Model;
+using GravityZero.HuntingSupport.Service.Session;
 using Hunt.Eventing;
-using Hunt.Model;
-using Hunt.ServiceContext;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Hunt.Controllers
+namespace GravityZero.Hunting.Service.Controllers
 {
     public class ValuesController : ControllerBase
     {

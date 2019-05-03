@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Hunt.Model;
-using HuntRepository.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq;
 using log4net;
-using Hunt.Configuration;
-using HuntRepository.Data;
 using Microsoft.EntityFrameworkCore;
+using GravityZero.HuntingSupport.Repository.Infrastructure;
+using GravityZero.HuntingSupport.Repository.Model;
+using GravityZero.HuntingSupport.Repository.Configuration;
 
-namespace Hunt.Data{
-
+namespace GravityZero.HuntingSupport.Repository
+{
     public class UserRepository : IUserRepository
     {
         private readonly HuntContext context;

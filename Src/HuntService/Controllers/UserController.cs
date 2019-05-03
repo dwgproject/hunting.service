@@ -1,15 +1,13 @@
-using Hunt.Data;
+using GravityZero.HuntingSupport.Service.Context;
+using GravityZero.HuntingSupport.Service.Context.Domain;
+using GravityZero.HuntingSupport.Service.Response;
+using GravityZero.HuntingSupport.Service.Session;
 using Hunt.Eventing;
-using Hunt.Responses;
-using Hunt.ServiceContext;
-using Hunt.ServiceContext.Domain;
-using Hunt.ServiceContext.Result;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
-using System.Collections.Generic;
 
-namespace Hunt.Controllers
+namespace GravityZero.Hunting.Service.Controllers
 {
     public class UserController : ControllerBase
     {
@@ -26,8 +24,8 @@ namespace Hunt.Controllers
         [HttpGet]
         public JsonResult Get(Guid identifier)
         {
-            ServiceResult<User> getResult = userService.Get(identifier);
-            return new JsonResult(Response<User>.Create(getResult.IsSuccess, getResult.Payload, getResult.Code));
+            ServiceResult<UserServiceModel> getResult = userService.Get(identifier);
+            return new JsonResult(ServiceResponse<UserServiceModel>.Create(getResult.IsSuccess, getResult.Payload, getResult.Code));
         }
 
         [HttpGet]
@@ -42,34 +40,28 @@ namespace Hunt.Controllers
         public JsonResult SignUp([FromBody]FullUser user)
         {
             ServiceResult<string> addResult = userService.Add(user);
-            return new JsonResult(Response<string>.Create(addResult.IsSuccess, addResult.Payload, addResult.Code));
+            return new JsonResult(ServiceResponse<string>.Create(addResult.IsSuccess, addResult.Payload, addResult.Code));
         }
         
         [HttpPost]
         public JsonResult SignIn([FromBody]Authentication authentication)
         {
             ServiceResult<Guid> authenticationResult = serviceContext.SignIn(authentication);
-            return new JsonResult(Response<Guid>.Create(authenticationResult.IsSuccess, authenticationResult.Payload, authenticationResult.Code));
+            return new JsonResult(ServiceResponse<Guid>.Create(authenticationResult.IsSuccess, authenticationResult.Payload, authenticationResult.Code));
         }
         
         [HttpPost]
         public JsonResult SignOut(Guid identifier)
         {
             ServiceResult<string> signOutResult = serviceContext.SignOut(identifier);
-            return new JsonResult(Response<string>.Create(signOutResult.IsSuccess, signOutResult.Payload, signOutResult.Code));
+            return new JsonResult(ServiceResponse<string>.Create(signOutResult.IsSuccess, signOutResult.Payload, signOutResult.Code));
         }
 
         [HttpDelete]
         public JsonResult Delete(Guid identifier)
         {
             ServiceResult<string> deleteResult = userService.Delete(identifier);
-            return new JsonResult(Response<string>.Create(deleteResult.IsSuccess, deleteResult.Payload, deleteResult.Code));
+            return new JsonResult(ServiceResponse<string>.Create(deleteResult.IsSuccess, deleteResult.Payload, deleteResult.Code));
         }
     }
 }
-
-
-            // user.Identifier = Guid.NewGuid();
-            // Result<User> result = repository.Add(user);
-            
-            // return MessagePayloadResponse.Success($"User {user.Identifier} has been added.");

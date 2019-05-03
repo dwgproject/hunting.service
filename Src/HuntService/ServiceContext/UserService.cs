@@ -1,12 +1,13 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Hunt.ServiceContext.Domain;
-using Hunt.ServiceContext.Result;
-using HuntRepository.Infrastructure;
-using Hunt.ServiceContext.Extensions;
+using GravityZero.HuntingSupport.Repository.Infrastructure;
+using GravityZero.HuntingSupport.Service.Context.Domain;
+using GravityZero.HuntingSupport.Repository.Model;
+using GravityZero.HuntingSupport.Service.Context.Extensions;
 
-namespace Hunt.ServiceContext{
+namespace GravityZero.HuntingSupport.Service.Context
+{
     public class UserService : IUserService
     {
         private static readonly string check_user_error = "us1";//Wystąpił błąd podczas sprawdzania 
@@ -14,6 +15,7 @@ namespace Hunt.ServiceContext{
         private static readonly string check_user_empty_data = "us3";//Puste dane
 
         private readonly IUserRepository userRepository;
+
         public UserService(IUserRepository userRepository)
         {
             this.userRepository = userRepository;
@@ -22,29 +24,29 @@ namespace Hunt.ServiceContext{
         public ServiceResult<string> Add(FullUser user)
         {   if (user == null || user.Login == null)
                 return ServiceResult<string>.Failed(string.Empty, check_user_empty_data);
-            RepositoryResult<IEnumerable<Model.User>> queryResult = userRepository.Query(ux => ux.Login == user.Login);
+            RepositoryResult<IEnumerable<User>> queryResult = userRepository.Query(ux => ux.Login == user.Login);
             if (!queryResult.IsSuccess)
                 return ServiceResult<string>.Failed(string.Empty, check_user_error);//tutaj error powinien przyjsc z repo
             if (queryResult.Payload.Any())
                 return ServiceResult<string>.Failed(string.Empty, check_user_failed);
 
-            RepositoryResult<Model.User> result = userRepository.Add(user.ConverToUserRepository());
+            RepositoryResult<User> result = userRepository.Add(user.ConverToUserRepository());
             if (!result.IsSuccess)
                 return ServiceResult<string>.Failed(string.Empty, string.Empty);//kod od repo
                 
             return ServiceResult<string>.Success(string.Empty, string.Empty);//kod z repo o dodaniu użytkownika
         }
 
-        public ServiceResult<IEnumerable<User>> All()
+        public ServiceResult<IEnumerable<UserServiceModel>> All()
         {
-            RepositoryResult<IEnumerable<Model.User>> queryResult = userRepository.Query(qx => { return true; });
+            RepositoryResult<IEnumerable<User>> queryResult = userRepository.Query(qx => { return true; });
             if (queryResult.IsSuccess){
-                IList<User> users = new List<User>();
-                foreach (Model.User user in  queryResult.Payload)
+                IList<UserServiceModel> users = new List<UserServiceModel>();
+                foreach (User user in  queryResult.Payload)
                     users.Add(user.ConverToUserService());
-                return ServiceResult<IEnumerable<User>>.Failed(users, queryResult.Code); 
+                return ServiceResult<IEnumerable<UserServiceModel>>.Failed(users, queryResult.Code); 
             }
-            return ServiceResult<IEnumerable<User>>.Failed(Enumerable.Empty<User>(), queryResult.Code);
+            return ServiceResult<IEnumerable<UserServiceModel>>.Failed(Enumerable.Empty<UserServiceModel>(), queryResult.Code);
         }
 
         public ServiceResult<string> Delete(Guid identifier)
@@ -55,19 +57,19 @@ namespace Hunt.ServiceContext{
                             ServiceResult<string>.Failed(deleteResult.Payload, deleteResult.Code);
         }
 
-        public ServiceResult<User> Get(Guid identifer)
+        public ServiceResult<UserServiceModel> Get(Guid identifer)
         {
-            RepositoryResult<Model.User> findResult = userRepository.Find(identifer);
+            RepositoryResult<User> findResult = userRepository.Find(identifer);
             return findResult.IsSuccess ? 
-                        ServiceResult<User>.Success(findResult.Payload.ConverToUserService() ,findResult.Code) : 
-                            ServiceResult<User>.Failed(new User() ,findResult.Code);
+                        ServiceResult<UserServiceModel>.Success(findResult.Payload.ConverToUserService() ,findResult.Code) : 
+                            ServiceResult<UserServiceModel>.Failed(new UserServiceModel() ,findResult.Code);
         }
 
         public ServiceResult<FullUser> Update(FullUser user)
         {
-            RepositoryResult<Model.User> updateResult = userRepository.Update(user.ConverToUserRepository());
+            RepositoryResult<User> updateResult = userRepository.Update(user.ConverToUserRepository());
             return updateResult.IsSuccess ? 
-                        ServiceResult<FullUser>.Success(updateResult.Payload.ConverToFullUserService(), updateResult.Code) : 
+                        ServiceResult<FullUser>.Success(updateResult.Payload.ConverToFullUser(), updateResult.Code) : 
                             ServiceResult<FullUser>.Failed(null, updateResult.Code);
         }
     }

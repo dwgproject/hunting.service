@@ -1,7 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Hunt.Model{
+namespace GravityZero.HuntingSupport.Repository.Model
+{
     public class Animal{
         
         [Key]

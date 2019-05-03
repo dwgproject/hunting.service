@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 
-namespace HuntRepository.Infrastructure{
+namespace GravityZero.HuntingSupport.Repository.Infrastructure
+{
     public interface IModuleRepository<TResult, TModelParam, TIdentifierParam>{
 
         RepositoryResult<TResult> Add(TModelParam user);

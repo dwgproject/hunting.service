@@ -1,17 +1,18 @@
-using Hunt.Model;
+using GravityZero.HuntingSupport.Repository.Model;
+using GravityZero.HuntingSupport.Service.Context.Domain;
 
-namespace Hunt.ServiceContext.Extensions{
-
+namespace GravityZero.HuntingSupport.Service.Context.Extensions
+{
     public static class RoleConverter{
 
-        public static Role ConvertToModel(this Hunt.ServiceContext.Domain.Role role){
+        public static Role ConvertToModel(this RoleServiceModel role){
             return new Role(){
                 Identifier = role.Identifier,
                 Name = role.Name
             };
         }
 
-        public static Hunt.ServiceContext.Domain.Role ConvertToServiceRole(this Hunt.ServiceContext.Domain.Role role, Role model){
+        public static RoleServiceModel ConvertToServiceRole(this RoleServiceModel role, Role model){
             role.Identifier = model.Identifier;
             role.Name = model.Name;
             return role;

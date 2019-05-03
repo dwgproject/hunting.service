@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hunt.Configuration;
-using Hunt.Data;
-using Hunt.Model;
-using HuntRepository.Infrastructure;
+using GravityZero.HuntingSupport.Repository.Configuration;
+using GravityZero.HuntingSupport.Repository.Infrastructure;
+using GravityZero.HuntingSupport.Repository.Model;
 using log4net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace HuntRepository.Data
+namespace GravityZero.HuntingSupport.Repository
 {
     public class QuarryRepository : IQuarryRepository
     {

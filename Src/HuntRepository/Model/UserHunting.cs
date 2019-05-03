@@ -1,6 +1,6 @@
 using System;
 
-namespace Hunt.Model
+namespace GravityZero.HuntingSupport.Repository.Model
 {
     public class UserHunting
     {

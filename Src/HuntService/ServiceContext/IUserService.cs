@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
-using Hunt.ServiceContext.Domain;
-using Hunt.ServiceContext.Result;
+using GravityZero.HuntingSupport.Service.Context.Domain;
 
-namespace Hunt.ServiceContext{
+namespace GravityZero.HuntingSupport.Service.Context
+{
 
     public interface IUserService{
         ServiceResult<string> Add(FullUser user);
-        ServiceResult<IEnumerable<User>> All();
+        ServiceResult<IEnumerable<UserServiceModel>> All();
         ServiceResult<string> Delete(Guid identifier);
-        ServiceResult<User> Get(Guid identifer);
+        ServiceResult<UserServiceModel> Get(Guid identifer);
         ServiceResult<FullUser> Update(FullUser user);
     }
 }

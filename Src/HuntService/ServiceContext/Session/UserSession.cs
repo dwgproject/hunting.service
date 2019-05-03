@@ -1,23 +1,24 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Hunt.ServiceContext.Exceptions;
+using GravityZero.HuntingSupport.Service.Context.Exceptions;
 
-namespace Hunt.ServiceContext.ServiceSession{
+namespace GravityZero.HuntingSupport.Service.Session
+{
     public class UserSession : IUserSession
     {
-        private ConcurrentDictionary<Guid, Session> sessions;
+        private ConcurrentDictionary<Guid, SessionUnit> sessions;
 
         public UserSession()
         {
-            sessions = new ConcurrentDictionary<Guid, Session>();
+            sessions = new ConcurrentDictionary<Guid, SessionUnit>();
             Task.Run(() => CheckSessions());
         }
 
-        public void AddOrUpdate(Session session)
+        public void AddOrUpdate(SessionUnit session)
         {
              if (sessions.ContainsKey(session.Identifier)){
-                Session temporary;
+                SessionUnit temporary;
                 bool isSuccess = sessions.TryRemove(session.Identifier, out temporary);
                 if (!isSuccess)
                     throw new SessionCloseException("Error occured during updating the session.");
@@ -34,14 +35,14 @@ namespace Hunt.ServiceContext.ServiceSession{
         public void Close(Guid identifier)
         {
             if (sessions.ContainsKey(identifier)){
-                Session temporary;
+                SessionUnit temporary;
                 bool isSucces = sessions.TryRemove(identifier, out temporary);
                 if (!isSucces)
                     throw new SessionCloseException("Error occured during closing the session.");
             }
         }
 
-        public Session Get(Guid identifier)
+        public SessionUnit Get(Guid identifier)
         {
             if (sessions.ContainsKey(identifier)){
                 return sessions[identifier];
@@ -52,7 +53,7 @@ namespace Hunt.ServiceContext.ServiceSession{
         private void CheckSessions(){
             DateTime now = DateTime.Now;
             foreach (var session in sessions.ToArray()){
-                Session current = session.Value;
+                SessionUnit current = session.Value;
                 TimeSpan delta = now.Subtract(current.LastTick);
                 if (delta.Minutes > 20)
                     Close(session.Key);
