@@ -3,7 +3,7 @@ using GravityZero.HuntingSupport.Repository.Infrastructure;
 using GravityZero.HuntingSupport.Service.Context.Domain;
 using GravityZero.HuntingSupport.Service.Context.Exceptions;
 using GravityZero.HuntingSupport.Service.Session;
-using HuntRepository.Extensions;
+using GravityZero.HuntingSupport.Repository.Extension;
 
 namespace GravityZero.HuntingSupport.Service.Context
 {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GravityZero.Hunting.Service.Controllers
 {
+
     public class ConfigurationController : ControllerBase
     {
         private readonly IConfigurationService configuration;
@@ -30,7 +31,7 @@ namespace GravityZero.Hunting.Service.Controllers
         }
 
         [HttpDelete]
-        public JsonResult DeleteRole([FromBody]Guid identifier)
+        public JsonResult DeleteRole(Guid identifier)
         {
             var queryResult = configuration.DeleteRole(identifier);
             return new JsonResult(ServiceResponse<string>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
