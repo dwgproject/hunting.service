@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GravityZero.HuntingSupport.Repository.Configuration;
+using GravityZero.HuntingSupport.Repository.Extension;
 using GravityZero.HuntingSupport.Repository.Infrastructure;
 using GravityZero.HuntingSupport.Repository.Model;
 using log4net;
@@ -100,7 +101,10 @@ namespace GravityZero.HuntingSupport.Repository
             IDbContextTransaction tx = null;
             try{
                 //context = new HuntContext();
-                var resultQuery = context.Roles.Where(ux => query.Invoke(ux));                
+                var resultQuery = context.Roles.Where(ux => query.Invoke(ux));
+                if (resultQuery.IsNotNullAndAny()){
+                    return result;
+                }
                 return new RepositoryResult<IEnumerable<Role>>(true, resultQuery.AsEnumerable());
             }catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło sie {query}, {ex}");

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using GravityZero.HuntingSupport.Repository.Infrastructure;
 using GravityZero.HuntingSupport.Repository.Model;
 
-namespace HuntRepository.Extensions
+namespace GravityZero.HuntingSupport.Repository.Extension
 {
     public static class QueryExtensions{
 
