@@ -6,6 +6,7 @@ using Hunt.Eventing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Collections.Generic;
 
 namespace GravityZero.Hunting.Service.Controllers
 {
@@ -31,9 +32,8 @@ namespace GravityZero.Hunting.Service.Controllers
         [HttpGet]
         public JsonResult GetAll()
         {
-            //example query
-            //var queryResult = repository.GetUsersByDate(DateTime.Now, DateTime.Now);
-            return new JsonResult("ok");
+            ServiceResult<IEnumerable<UserServiceModel>> allResult =  userService.All();
+            return new JsonResult(ServiceResponse<IEnumerable<UserServiceModel>>.Create(allResult.IsSuccess, allResult.Payload, allResult.Code));
         }
 
         [HttpPost]
