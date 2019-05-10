@@ -61,6 +61,12 @@ namespace GravityZero.HuntingSupport.Service.Main
             {
                 routes.MapRoute("default", "Api/{controller=Home}/{action=Index}/{id?}");
             });
+
+            using(var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<HuntContext>();
+                context.Database.EnsureCreated();
+            }
         }
     }
 }
