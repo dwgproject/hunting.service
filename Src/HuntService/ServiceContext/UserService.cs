@@ -44,7 +44,7 @@ namespace GravityZero.HuntingSupport.Service.Context
                 IList<UserServiceModel> users = new List<UserServiceModel>();
                 foreach (User user in  queryResult.Payload)
                     users.Add(user.ConverToUserService());
-                return ServiceResult<IEnumerable<UserServiceModel>>.Failed(users, queryResult.Code); 
+                return ServiceResult<IEnumerable<UserServiceModel>>.Success(users, queryResult.Code); 
             }
             return ServiceResult<IEnumerable<UserServiceModel>>.Failed(Enumerable.Empty<UserServiceModel>(), queryResult.Code);
         }
