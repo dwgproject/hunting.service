@@ -6,7 +6,7 @@ namespace GravityZero.HuntingSupport.Service.Context.Domain
     {
         public Guid Identifier { get; set; }
         //public DateTime Issued { get; set; }
-        //public string Login { get; set; }
+        public string Login { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }

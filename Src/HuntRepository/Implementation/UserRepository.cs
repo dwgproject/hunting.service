@@ -105,13 +105,13 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<IEnumerable<User>> Query(Func<User, bool> query)
         {
-            RepositoryResult<IEnumerable<User>> result = new RepositoryResult<IEnumerable<User>>(false, new List<User>());
+            RepositoryResult<IEnumerable<User>> result = new RepositoryResult<IEnumerable<User>>(false, new List<User>(), string.Concat(TAG, 10));
             //HuntContext context = null;
             IDbContextTransaction tx = null;
             try{
                 //context = new HuntContext();
                 var resultQuery = context.Users.Include("Role").Where(ux => query.Invoke(ux));                
-                return new RepositoryResult<IEnumerable<User>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<User>>(true, resultQuery.AsEnumerable(), string.Concat(TAG, 1));
             }catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło sie {query}, {ex}");
                 return result;

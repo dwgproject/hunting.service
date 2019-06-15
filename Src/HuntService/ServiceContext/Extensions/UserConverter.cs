@@ -21,7 +21,9 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
             return new UserServiceModel(){
                 Name = model.Name,
                 Surname = model.Surname,
+                Login = model.Login,
                 Email = model.Email,
+                Role =  new RoleServiceModel().ConvertToServiceRole(model.Role),        
                 Identifier = model.Identifier
             };
         }
