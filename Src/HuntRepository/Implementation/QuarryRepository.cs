@@ -22,7 +22,7 @@ namespace GravityZero.HuntingSupport.Repository
         }
         public RepositoryResult<Quarry> Add(Quarry quarry)
         {
-            var result = new RepositoryResult<Quarry>(false, new Quarry());
+            //var result = new RepositoryResult<Quarry>(false, new Quarry());
             IDbContextTransaction tx = null;
             try
             {
@@ -32,14 +32,13 @@ namespace GravityZero.HuntingSupport.Repository
                 context.Quarries.Add(quarry);
                 context.SaveChanges();
                 tx.Commit();
-                result = new RepositoryResult<Quarry>(true, quarry);
                 log.Info("Dodana quarry");
-                return result;
+                return new RepositoryResult<Quarry>(true, quarry, TAG+"01");;
                 
             }
             catch (Exception ex) {
                 log.Error($"Nie dodano quarry{ex}");
-                return result;
+                return new RepositoryResult<Quarry>(true, null, TAG+"02");;
             }
             finally {
                 tx?.Dispose();
@@ -48,26 +47,30 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<string> Delete(Guid identifier)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            //var result = new RepositoryResult<string>(false, "",TAG);
             var existQuarry = context.Quarries.Find(identifier);
             IDbContextTransaction tx = null;
-            try{
-                tx = context.Database.BeginTransaction();
-                context.Quarries.Remove(existQuarry);
-                context.SaveChanges();
-                tx.Commit();
-                log.Info($"Usunięto{identifier}");
-                result = new RepositoryResult<string>(true,"",TAG);
-                return result;
+            if(existQuarry!=null){
+                try{
+                    tx = context.Database.BeginTransaction();
+                    context.Quarries.Remove(existQuarry);
+                    context.SaveChanges();
+                    tx.Commit();
+                    log.Info($"Usunięto{identifier}");
+                    return new RepositoryResult<string>(true,"",TAG+"05");
+                }
+                catch(Exception ex){
+                    log.Error(ex);
+                    return new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"06");
+                }
+                finally{
+                    tx?.Dispose();
+                }
             }
-            catch(Exception ex){
-                log.Error(ex);
-                result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"03");
-                return result;
+            else{
+                return new RepositoryResult<string>(false,"", TAG+"11");
             }
-            finally{
-                tx?.Dispose();
-            }
+
         }
 
         public RepositoryResult<Quarry> Find(Guid identifier)
@@ -75,8 +78,8 @@ namespace GravityZero.HuntingSupport.Repository
             try{
                 var found = context.Quarries.Include(a=>a.Animal).FirstOrDefault(i=>i.Identifier == identifier);
                 return found != null ?
-                                new RepositoryResult<Quarry>(true, found):
-                                new RepositoryResult<Quarry>(false, null);
+                                new RepositoryResult<Quarry>(true, found, TAG+"07"):
+                                new RepositoryResult<Quarry>(false, null, TAG+"08");
                             
             }
             catch(Exception ex){
@@ -88,17 +91,17 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<IEnumerable<Quarry>> Query(Func<Quarry, bool> query)
         {
-            var result = new RepositoryResult<IEnumerable<Quarry>>(false, new List<Quarry>());
+            //var result = new RepositoryResult<IEnumerable<Quarry>>(false, new List<Quarry>());
             IDbContextTransaction tx = null;
             try
             {
                 tx = context.Database.BeginTransaction();
                 var resultQuery = context.Quarries.Where(x => query.Invoke(x));
-                return new RepositoryResult<IEnumerable<Quarry>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<Quarry>>(true, resultQuery.AsEnumerable(), TAG+"09");
             }
             catch (Exception ex)
             {
-                return result;
+                return new RepositoryResult<IEnumerable<Quarry>>(true, null, TAG+"10");;
             }
             finally {
                 tx?.Dispose();
@@ -107,7 +110,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<Quarry> Update(Quarry quarry)
         {
-            var result = new RepositoryResult<Quarry>(false, null,TAG);
+            //var result = new RepositoryResult<Quarry>(false, null,TAG);
             var existQuarry = context.Quarries.FirstOrDefault(q=>q.Identifier == quarry.Identifier);
             if(existQuarry!=null){
                 IDbContextTransaction tx = null;
@@ -117,21 +120,18 @@ namespace GravityZero.HuntingSupport.Repository
                     existQuarry.Amount = existQuarry.Amount-quarry.Amount;
                     context.SaveChanges();
                     tx.Commit();
-                    result = new RepositoryResult<Quarry>(true,existQuarry,TAG);
-                    return result;
+                    return new RepositoryResult<Quarry>(true,existQuarry,TAG+"03");
                 }
                 catch (Exception ex) { 
                     log.Error(ex);
-                    result = new RepositoryResult<Quarry>(false,null,TAG+"01");
-                    return result;
+                    return new RepositoryResult<Quarry>(false,null,TAG+"04");
                 }
                 finally {
                     tx?.Dispose();
                 }
             }
             else{
-                result = new RepositoryResult<Quarry>(false,null, TAG+"02");
-                return result;
+                return new RepositoryResult<Quarry>(false,null, TAG+"12");
             }
 
         }

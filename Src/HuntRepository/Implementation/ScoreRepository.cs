@@ -24,7 +24,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<Score> Add(Score score)
         {
-            var result = new RepositoryResult<Score>(false, new Score());
+            //var result = new RepositoryResult<Score>(false, new Score());
             IDbContextTransaction tx = null;
             try{
                 tx = context.Database.BeginTransaction();
@@ -36,13 +36,12 @@ namespace GravityZero.HuntingSupport.Repository
                 context.Scores.Add(score);
                 context.SaveChanges();
                 tx.Commit();
-                result = new RepositoryResult<Score>(true, score);
                 log.Info($"Dodano nowy rezultar {score}");
-                return result;
+                return new RepositoryResult<Score>(true, score, TAG+"01");
             }
             catch(Exception ex){
                 log.Error($"Nie udało się dodać nowego rezultatu {score}, {ex}");
-                return result;
+                return new RepositoryResult<Score>(true, score, TAG+"02");;
             }
             finally{
                 tx?.Dispose();
@@ -51,7 +50,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<string> Delete(Guid identifier)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            //var result = new RepositoryResult<string>(false, "",TAG);
             var tmpScore = context.Scores.Find(identifier);
             if(tmpScore!=null){
                 IDbContextTransaction tx = null;
@@ -61,21 +60,18 @@ namespace GravityZero.HuntingSupport.Repository
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Usunięto rezultat {identifier}");
-                    result = new RepositoryResult<string>(true,"",TAG);
-                    return result;
+                    return new RepositoryResult<string>(true,"",TAG+"05");
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się usunac rezultatu {identifier}, {ex}");
-                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"03");
-                    return result;
+                    return new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"06");
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
             else{
-                result = new RepositoryResult<string>(false,"",TAG+"04");
-                return result;
+                return new RepositoryResult<string>(false,"",TAG+"11");
             }
 
         }
@@ -85,8 +81,8 @@ namespace GravityZero.HuntingSupport.Repository
             try{
                 var found = context.Scores.Include(u=>u.User).Include(q=>q.Quarry).Include(h=>h.Hunting).FirstOrDefault(i=>i.Identifier == identifier);
                 return found != null ?
-                                new RepositoryResult<Score>(true, found):
-                                new RepositoryResult<Score>(false, null);
+                                new RepositoryResult<Score>(true, found, TAG+"07"):
+                                new RepositoryResult<Score>(false, null, TAG+"08");
                             
             }
             catch(Exception ex){
@@ -98,15 +94,15 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<IEnumerable<Score>> Query(Func<Score, bool> query)
         {
-            var result = new RepositoryResult<IEnumerable<Score>>(false, new List<Score>());
+            //var result = new RepositoryResult<IEnumerable<Score>>(false, new List<Score>());
             IDbContextTransaction tx = null;
             try{
                 var resultQuery = context.Scores.Include(u=>u.User).Include(q=>q.Quarry).Include(h=>h.Hunting).Where(ux=>query.Invoke(ux));
-                return new RepositoryResult<IEnumerable<Score>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<Score>>(true, resultQuery.AsEnumerable(), TAG+"09");
             }
             catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło się {query}, {ex}");
-                return result;
+                return new RepositoryResult<IEnumerable<Score>>(true, null, TAG+"10");
             }
             finally{              
                 tx?.Dispose();
@@ -116,7 +112,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<Score> Update(Score score)
         {
-            var result = new RepositoryResult<Score>(false, null,TAG);
+            //var result = new RepositoryResult<Score>(false, null,TAG);
             var tmpScore = context.Scores.Find(score.Identifier);
             if(tmpScore!=null){
                 IDbContextTransaction tx = null;
@@ -127,21 +123,18 @@ namespace GravityZero.HuntingSupport.Repository
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano rezultat {score}");
-                    result = new RepositoryResult<Score>(true,tmpScore,TAG);
-                    return result;
+                    return new RepositoryResult<Score>(true,tmpScore,TAG+"03");
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało sie zaktualizować rezultatu {score}, {ex}");
-                    result = new RepositoryResult<Score>(false,null,TAG+"01");
-                    return result;
+                    return new RepositoryResult<Score>(false,null,TAG+"04");
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
             else{
-                result = new RepositoryResult<Score>(false,null, TAG+"02");
-                return result;
+                return new RepositoryResult<Score>(false,null, TAG+"12");
             }
         }
     }

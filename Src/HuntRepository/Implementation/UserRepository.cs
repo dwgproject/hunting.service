@@ -26,7 +26,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<User> Add(User user)
         {
-            var result = new RepositoryResult<User>(false, new User());
+            //var result = new RepositoryResult<User>(false, new User());
             //HuntContext context = null;
             IDbContextTransaction tx = null;
             if(!context.Users.Any(i=>i.Email == user.Email)){
@@ -39,25 +39,24 @@ namespace GravityZero.HuntingSupport.Repository
                     context.Users.Add(user);
                     context.SaveChanges();
                     tx.Commit();
-                    result = new RepositoryResult<User>(true, user);
                     log.Info($"Dodano usera: {user}");
-                    return result;
+                    return new RepositoryResult<User>(true, user, TAG+"01");
                 }catch(Exception ex){
                     log.Error($"Nie udało się dodać usera:{user}, {ex}");
-                    return result;
+                    return new RepositoryResult<User>(false, null, TAG+"02");
                 }finally{
                     tx?.Dispose();
                 }
             }
             else{
-                return result;
+                return new RepositoryResult<User>(false, null, TAG+"13");;
             }
             
         }
 
         public RepositoryResult<string> Delete(Guid identidier)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            //var result = new RepositoryResult<string>(false, "",TAG);
             var tmpUser = context.Users.Find(identidier);
             if(tmpUser!=null)
             {
@@ -68,21 +67,18 @@ namespace GravityZero.HuntingSupport.Repository
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Usunięto usera: {identidier}");
-                    result = new RepositoryResult<string>(true,"",TAG);
-                    return result;
+                    return new RepositoryResult<string>(true,"",TAG+"05");
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się usunać usera: {identidier},{ex} ");
-                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"03");
-                    return result;
+                    return new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"06");
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
             else{
-                result = new RepositoryResult<string>(false,"",TAG+"04");
-                return result;
+                return new RepositoryResult<string>(false,"",TAG+"11");;
             }
         }
 
@@ -94,8 +90,8 @@ namespace GravityZero.HuntingSupport.Repository
                 //var found = context.Users.Find(identifier);
                 var found = context.Users.Include(h=>h.Huntings).FirstOrDefault(i=>i.Identifier == identifier);
                 return found != null ? 
-                                new RepositoryResult<User>(true, found) : 
-                                    new RepositoryResult<User>(false, null);
+                                new RepositoryResult<User>(true, found, TAG+"07") : 
+                                    new RepositoryResult<User>(false, null, TAG+"08");
 
             }catch(Exception ex){
                 return new RepositoryResult<User>(false, null);    
@@ -105,16 +101,16 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<IEnumerable<User>> Query(Func<User, bool> query)
         {
-            RepositoryResult<IEnumerable<User>> result = new RepositoryResult<IEnumerable<User>>(false, new List<User>(), string.Concat(TAG, 10));
+            //RepositoryResult<IEnumerable<User>> result = new RepositoryResult<IEnumerable<User>>(false, new List<User>(), string.Concat(TAG, 10));
             //HuntContext context = null;
             IDbContextTransaction tx = null;
             try{
                 //context = new HuntContext();
                 var resultQuery = context.Users.Include("Role").Where(ux => query.Invoke(ux));                
-                return new RepositoryResult<IEnumerable<User>>(true, resultQuery.AsEnumerable(), string.Concat(TAG, 1));
+                return new RepositoryResult<IEnumerable<User>>(true, resultQuery.AsEnumerable(), TAG+"09");
             }catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło sie {query}, {ex}");
-                return result;
+                return new RepositoryResult<IEnumerable<User>>(false, null, TAG+"10");;
             }finally{
                 tx?.Dispose();
             }
@@ -122,7 +118,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<User> Update(User user)
         {
-            var result = new RepositoryResult<User>(false, null, TAG);
+            //var result = new RepositoryResult<User>(false, null, TAG);
             var tmpUser = context.Users.Find(user.Identifier);
             if(tmpUser!=null){
                 IDbContextTransaction tx = null;
@@ -136,21 +132,18 @@ namespace GravityZero.HuntingSupport.Repository
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Update usera:{user} ");
-                    result = new RepositoryResult<User>(true,tmpUser);
-                    return result;
+                    return new RepositoryResult<User>(true,tmpUser, TAG+"03");
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało update usera:{user}, {ex}");
-                    result = new RepositoryResult<User>(false,null,TAG+"01");
-                    return result;
+                    return new RepositoryResult<User>(false,null,TAG+"04");
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
             else{
-                result = new RepositoryResult<User>(false,null, TAG+"02");
-                return result;
+                return new RepositoryResult<User>(false,null, TAG+"12");
             }
         }
     }
