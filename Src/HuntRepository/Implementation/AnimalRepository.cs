@@ -24,7 +24,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<Animal> Add(Animal animal)
         {
-            var result = new RepositoryResult<Animal>(false, new Animal());
+            //var result = new RepositoryResult<Animal>(false, new Animal());
             IDbContextTransaction tx = null;
             try{
                 tx = context.Database.BeginTransaction();
@@ -32,14 +32,13 @@ namespace GravityZero.HuntingSupport.Repository
                 context.Animals.Add(animal);
                 context.SaveChanges();
                 tx.Commit();
-                result = new RepositoryResult<Animal>(true, animal);
                 log.Info($"Dodano zwierzyne {animal}");
-                return result;
+                return new RepositoryResult<Animal>(true, animal, TAG+"01");
                 
             }
             catch(Exception ex){
                 log.Error($"Nie udało dodać sie zwierzyny {animal}, {ex}");
-                return result;
+                return new RepositoryResult<Animal>(true, null, TAG+"02");;
             }
             finally{
                 tx?.Dispose();
@@ -48,7 +47,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<string> Delete(Guid identifier)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            //var result = new RepositoryResult<string>(false, "",TAG);
             var tmpAnimal = context.Animals.Find(identifier);
             if(tmpAnimal!=null){
                 IDbContextTransaction tx = null;
@@ -58,21 +57,18 @@ namespace GravityZero.HuntingSupport.Repository
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Usunięto zwierzyne: {identifier}");
-                    result = new RepositoryResult<string>(true,"",TAG);
-                    return result;
+                    return new RepositoryResult<string>(true,"",TAG+"05");
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało usunac się zwierzyny {identifier}, {ex}");
-                    result = new RepositoryResult<string>(false, ex.Message.ToString(), TAG+"03");
-                    return result;
+                    return new RepositoryResult<string>(false, ex.Message.ToString(), TAG+"06");
                 }
                 finally{
                     tx?.Dispose();
                 }    
             }
             else{
-                result = new RepositoryResult<string>(false, "", TAG+"04");
-                return result;
+                return new RepositoryResult<string>(false, "", TAG+"11");
             }
         }
 
@@ -81,8 +77,8 @@ namespace GravityZero.HuntingSupport.Repository
             try{
                 var found = context.Animals.Find(identifier);
                 return found != null ?
-                                new RepositoryResult<Animal>(true, found):
-                                new RepositoryResult<Animal>(false, null);
+                                new RepositoryResult<Animal>(true, found, TAG+"07"):
+                                new RepositoryResult<Animal>(false, null, TAG+"08");
                             
             }
             catch(Exception ex){
@@ -98,11 +94,11 @@ namespace GravityZero.HuntingSupport.Repository
             IDbContextTransaction tx = null;
             try{
                 var resultQuery = context.Animals.Where(ux=>query.Invoke(ux));
-                return new RepositoryResult<IEnumerable<Animal>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<Animal>>(true, resultQuery.AsEnumerable(), TAG+"09");
             }
             catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło się {query}, {ex}");
-                return result;
+                return new RepositoryResult<IEnumerable<Animal>>(true, null, TAG+"10");;
             }
             finally{              
                 tx?.Dispose();
@@ -111,7 +107,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<Animal> Update(Animal animal)
         {
-            var result = new RepositoryResult<Animal>(false, null,TAG);
+            //var result = new RepositoryResult<Animal>(false, null,TAG);
             var tmpAnimal = context.Animals.Find(animal.Identifier);
             if(tmpAnimal!=null){
                 IDbContextTransaction tx = null;
@@ -121,21 +117,18 @@ namespace GravityZero.HuntingSupport.Repository
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano zwierzyne {animal}");
-                    result = new RepositoryResult<Animal>(true,tmpAnimal,TAG);
-                    return result;
+                    return new RepositoryResult<Animal>(true,tmpAnimal,TAG+"03");
                 }
                 catch(Exception ex){
                     log.Error($"NIe powiodła się aktualizacja {animal}, {ex}");
-                    result = new RepositoryResult<Animal>(false, null, TAG+"01");
-                    return result;
+                    return new RepositoryResult<Animal>(false, null, TAG+"04");
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
             else{
-                result = new RepositoryResult<Animal>(false,null, TAG+"02");
-                return result;
+                return new RepositoryResult<Animal>(false,null, TAG+"12");
             }
         }
     }

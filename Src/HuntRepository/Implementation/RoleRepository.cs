@@ -25,22 +25,19 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<Role> Add(Role role)
         {
-            var result = new RepositoryResult<Role>(false, new Role());
+            //var result = new RepositoryResult<Role>(false, new Role());
             IDbContextTransaction tx = null;
-
-            try{
-                
+            try{              
                 tx = context.Database.BeginTransaction();
                 role.Identifier = Guid.NewGuid();
                 context.Roles.Add(role);
                 context.SaveChanges();
                 tx.Commit();
-                result = new RepositoryResult<Role>(true, role);
                 log.Info($"Dodano role: {role}");
-                return result;
+                return new RepositoryResult<Role>(true, role, TAG+"01");
             }catch(Exception ex){
                 log.Error($"Nie udało się dodać roli:{role.Name}, {ex}");
-                return result;
+                return new RepositoryResult<Role>(false,null,TAG+"02");
             }finally{
                     tx?.Dispose();   
                 }
@@ -49,7 +46,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<string> Delete(Guid identifier)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            //var result = new RepositoryResult<string>(false, "",TAG);
             var tmpRole = context.Roles.Find(identifier);
             if(tmpRole!=null)
             {
@@ -60,21 +57,18 @@ namespace GravityZero.HuntingSupport.Repository
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Usunięto role: {identifier}");
-                    result = new RepositoryResult<string>(true,"",TAG);
-                    return result;
+                    return new RepositoryResult<string>(true,"",TAG+"05");
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się usunać usera: {tmpRole.Name},{ex} ");
-                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"03");
-                    return result;
+                    return new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"06");
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
             else{
-                result = new RepositoryResult<string>(false,"",TAG+"04");
-                return result;
+                return new RepositoryResult<string>(false,"",TAG+"11");
             }
         }
 
@@ -83,8 +77,8 @@ namespace GravityZero.HuntingSupport.Repository
             try{
                 var found = context.Roles.Find(identifier);
                 return found != null ? 
-                                new RepositoryResult<Role>(true, found) : 
-                                    new RepositoryResult<Role>(false, null);
+                                new RepositoryResult<Role>(true, found, TAG+"07") : 
+                                    new RepositoryResult<Role>(false, null, TAG+"08");
 
             }catch(Exception ex){
                 return new RepositoryResult<Role>(false, null);    
@@ -96,17 +90,17 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<IEnumerable<Role>> Query(Func<Role, bool> query)
         {
-            RepositoryResult<IEnumerable<Role>> result = new RepositoryResult<IEnumerable<Role>>(false, new List<Role>());
+            //RepositoryResult<IEnumerable<Role>> result = new RepositoryResult<IEnumerable<Role>>(false, new List<Role>());
             IDbContextTransaction tx = null;
             try{
                 var resultQuery = context.Roles.Where(ux => query.Invoke(ux));
                 if (resultQuery.IsNotNullAndAny()){
                     return new RepositoryResult<IEnumerable<Role>>(true, resultQuery);
                 }
-                return new RepositoryResult<IEnumerable<Role>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<Role>>(true, resultQuery.AsEnumerable(), TAG+"09");
             }catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło sie {query}, {ex}");
-                return result;
+                return new RepositoryResult<IEnumerable<Role>>(false,null,TAG+"10");
             }finally{
                 tx?.Dispose();
             }
@@ -114,7 +108,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<Role> Update(Role role)
         {
-            var result = new RepositoryResult<Role>(false, null,TAG);
+            //var result = new RepositoryResult<Role>(false, null,TAG);
             var tmpRole = context.Roles.Find(role.Identifier);
             if(tmpRole!=null){
                 IDbContextTransaction tx = null;
@@ -124,21 +118,18 @@ namespace GravityZero.HuntingSupport.Repository
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano role:{role.Name} ");
-                    result = new RepositoryResult<Role>(true,tmpRole,TAG);
-                    return result;
+                    return new RepositoryResult<Role>(true,tmpRole,TAG+"03");
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało update usera:{role.Name}, {ex}");
-                    result = new RepositoryResult<Role>(false,null,TAG+"01");
-                    return result;
+                    return new RepositoryResult<Role>(false,null,TAG+"04");
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
             else{
-                result = new RepositoryResult<Role>(false,null, TAG+"02");
-                return result;
+                return new RepositoryResult<Role>(false,null, TAG+"12");
             }
         }
     }

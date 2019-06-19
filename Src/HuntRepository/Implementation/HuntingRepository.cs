@@ -25,7 +25,7 @@ namespace GravityZero.HuntingSupport.Repository
         public RepositoryResult<Hunting> Add(Hunting hunting)
         {
 
-            var result = new RepositoryResult<Hunting>(false, new Hunting());
+            //var result = new RepositoryResult<Hunting>(false, new Hunting());
             var listQuarries = new List<Quarry>();
             var partialHunting = new List<PartialHunting>();
             var randomNumberList = new List<int>();
@@ -59,13 +59,12 @@ namespace GravityZero.HuntingSupport.Repository
                 context.Huntings.Add(hunting);
                 context.SaveChanges();
                 tx.Commit();
-                result = new RepositoryResult<Hunting>(true, hunting);
                 log.Info($"Dodano nowe polowanie {hunting}");
-                return result;
+                return new RepositoryResult<Hunting>(true, hunting, TAG+"01");
             }
             catch(Exception ex){
                 log.Error($"Nie udało sie dodać nowego polowania {hunting}, {ex}");
-                return result;
+                return new RepositoryResult<Hunting>(true, null, TAG+"02");;
             }
             finally{
                 tx?.Dispose();
@@ -75,7 +74,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<string> Delete(Guid identifier)
         {
-            var result = new RepositoryResult<string>(false, "",TAG);
+            //var result = new RepositoryResult<string>(false, "",TAG);
             var tmpHunting = context.Huntings.Find(identifier);
             if(tmpHunting!=null){
                 IDbContextTransaction tx=null;
@@ -85,31 +84,28 @@ namespace GravityZero.HuntingSupport.Repository
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Usunięto polowanie {identifier}");
-                    result = new RepositoryResult<string>(true,"",TAG);
-                    return result;
+                    return new RepositoryResult<string>(true,"",TAG+"05");
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się usunąc polowania {identifier}, {ex}");
-                    result = new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"03");
-                    return result;
+                    return new RepositoryResult<string>(false,ex.Message.ToString(),TAG+"06");
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
             else{
-                result = new RepositoryResult<string>(false,"",TAG+"04");
-                return result;
+                return new RepositoryResult<string>(false,"",TAG+"11");
             }
         }
 
         public RepositoryResult<Hunting> Find(Guid identifier)
         {
-                try{
+            try{
                 var found = context.Huntings.Include(l=>l.Leader).Include(s=>s.Status).Include(u=>u.Users).Include(q=>q.Quarries).Include(p=>p.PartialHuntings).FirstOrDefault(i=>i.Identifier==identifier);
                 return found != null ?
-                                new RepositoryResult<Hunting>(true, found):
-                                new RepositoryResult<Hunting>(false, null);
+                                new RepositoryResult<Hunting>(true, found, TAG+"07"):
+                                new RepositoryResult<Hunting>(false, null, TAG+"08");
                             
             }
             catch(Exception ex){
@@ -121,7 +117,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<Hunting> Finish(Hunting hunting)
         {
-            var result = new RepositoryResult<Hunting>(false, new Hunting());
+            //var result = new RepositoryResult<Hunting>(false, new Hunting());
             var tmpHunting = context.Huntings.Find(hunting.Identifier);
             if(tmpHunting!=null){
                 IDbContextTransaction tx = null;
@@ -130,34 +126,33 @@ namespace GravityZero.HuntingSupport.Repository
                     tmpHunting.Status=Status.Finish;
                     context.SaveChanges();
                     tx.Commit();
-                    result = new RepositoryResult<Hunting>(true, tmpHunting);
-                    return result;
+                    return new RepositoryResult<Hunting>(true, tmpHunting, TAG+"15");
                 }
                 catch(Exception ex){
                     log.Error($"Zakoczenie polowania nie powiodło się {hunting}, {ex}");
-                    return result;
+                    return new RepositoryResult<Hunting>(true, null, TAG+"16");
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
             else{
-                return result;
+                return new RepositoryResult<Hunting>(true, null, TAG+"17");;
 
             }
         }
 
         public RepositoryResult<IEnumerable<Hunting>> Query(Func<Hunting, bool> query)
         {
-            var result = new RepositoryResult<IEnumerable<Hunting>>(false, new List<Hunting>());
+            //var result = new RepositoryResult<IEnumerable<Hunting>>(false, new List<Hunting>());
             IDbContextTransaction tx = null;
             try{
                 var resultQuery = context.Huntings.Include(l=>l.Leader).Include(q=>q.Quarries).Include(ph=>ph.PartialHuntings).Include(u=>u.Users).Where(query);
-                return new RepositoryResult<IEnumerable<Hunting>>(true, resultQuery.AsEnumerable());
+                return new RepositoryResult<IEnumerable<Hunting>>(true, resultQuery.AsEnumerable(), TAG+"09");
             }
             catch(Exception ex){
                 log.Error($"Zapytanie nie powiodło się {query}, {ex}");
-                return result;
+                return new RepositoryResult<IEnumerable<Hunting>>(true, null, TAG+"10");;
             }
             finally{
                 tx?.Dispose();
@@ -167,7 +162,7 @@ namespace GravityZero.HuntingSupport.Repository
 
         public RepositoryResult<Hunting> Update(Hunting hunting)
         {
-            var result = new RepositoryResult<Hunting>(false, null,TAG);
+            //var result = new RepositoryResult<Hunting>(false, null,TAG);
             var tmpHunting = context.Huntings.Find(hunting.Identifier);
             if(tmpHunting!=null && tmpHunting.Status!=Status.Finish)
             {
@@ -178,27 +173,24 @@ namespace GravityZero.HuntingSupport.Repository
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano polowanie {hunting}");
-                    result = new RepositoryResult<Hunting>(true,tmpHunting,TAG);
-                    return result;
+                    return new RepositoryResult<Hunting>(true,tmpHunting,TAG+"03");
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się zaktuaizować polowania {hunting}, {ex}");
-                    result = new RepositoryResult<Hunting>(false,null,TAG+"01");
-                    return result;
+                    return new RepositoryResult<Hunting>(false,null,TAG+"04");
                 }
                 finally{
                     tx?.Dispose();
                 }
             }
             else{
-                result = new RepositoryResult<Hunting>(false,null, TAG+"02");
-                return result;
+                return new RepositoryResult<Hunting>(false,null, TAG+"12");
             }
         }
 
         public RepositoryResult<Hunting> Start(Guid identifier)
         {
-            var result = new RepositoryResult<Hunting>(false, new Hunting());
+            //var result = new RepositoryResult<Hunting>(false, new Hunting());
             var selectedHunting = context.Huntings.Find(identifier);
             IDbContextTransaction tx = null;
             try {
@@ -206,10 +198,10 @@ namespace GravityZero.HuntingSupport.Repository
                 selectedHunting.Status = Status.Activate;
                 context.SaveChanges();
                 tx.Commit();
-                return result = new RepositoryResult<Hunting>(true, selectedHunting);
+                return new RepositoryResult<Hunting>(true, selectedHunting, TAG+"13");
             }
             catch (Exception ex) {
-                return result;
+                return new RepositoryResult<Hunting>(true, selectedHunting, TAG+"14");;
             }
             finally {
                 tx?.Dispose();
