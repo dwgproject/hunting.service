@@ -20,8 +20,8 @@ namespace GravityZero.HuntingSupport.Repository
             modelBuilder.Entity<UserHunting>().HasKey(hh => new { hh.UserId, hh.HuntingId });
             modelBuilder.Entity<UserHunting>().HasOne(h => h.User).WithMany(s=>s.Huntings).HasForeignKey(k=>k.UserId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<UserHunting>().HasOne(h => h.Hunting).WithMany(s=>s.Users).HasForeignKey(k => k.HuntingId).OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<User>().HasOne(r => r.Role).WithMany().OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<Hunting>().HasMany(x=>x.Quarries).WithOne().OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<User>().HasOne(r => r.Role).WithMany().OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Hunting>().HasMany(x=>x.Quarries).WithOne().OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<PartialHunting>().HasMany(x=>x.PartialHunters).WithOne().OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Hunting>().HasOne(l=>l.Leader).WithMany().OnDelete(DeleteBehavior.SetNull).IsRequired(false);
         } 
