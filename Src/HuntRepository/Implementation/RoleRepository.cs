@@ -93,7 +93,7 @@ namespace GravityZero.HuntingSupport.Repository
             //RepositoryResult<IEnumerable<Role>> result = new RepositoryResult<IEnumerable<Role>>(false, new List<Role>());
             IDbContextTransaction tx = null;
             try{
-                var resultQuery = context.Roles.Where(ux => query.Invoke(ux));
+                var resultQuery = context.Roles.Where(ux=>query.Invoke(ux));
                 if (resultQuery.IsNotNullAndAny()){
                     return new RepositoryResult<IEnumerable<Role>>(true, resultQuery);
                 }

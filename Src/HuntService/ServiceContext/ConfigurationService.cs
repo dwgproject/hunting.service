@@ -43,5 +43,25 @@ namespace GravityZero.HuntingSupport.Service.Context
             }
             return ServiceResult<IEnumerable<RoleServiceModel>>.Failed(Enumerable.Empty<RoleServiceModel>(), "cs5");
         }
+
+        public ServiceResult<IEnumerable<RoleServiceModel>> GetRole(string name)
+        {
+            var element = roleRepository.Query(rx=>rx.Name == name);
+            if(element.IsSuccess){
+                ICollection<RoleServiceModel> roles = new Collection<RoleServiceModel>();
+                foreach(var item in element.Payload){
+                    roles.Add(new RoleServiceModel().ConvertToServiceRole(item));
+                }
+                RoleServiceModel role = new RoleServiceModel().ConvertToServiceRole(element.Payload.FirstOrDefault());
+                return ServiceResult<IEnumerable<RoleServiceModel>>.Success(roles,"cs");    
+            }
+            return ServiceResult<IEnumerable<RoleServiceModel>>.Failed(Enumerable.Empty<RoleServiceModel>(),"");
+        }
+
+        public ServiceResult<string> UpdateRole(RoleServiceModel role)
+        {
+            var updateResult = roleRepository.Update(role.ConvertToModel());
+            return updateResult.IsSuccess ? ServiceResult<string>.Success(string.Empty,"") : ServiceResult<string>.Failed(string.Empty,"");
+        }
     }
 }
