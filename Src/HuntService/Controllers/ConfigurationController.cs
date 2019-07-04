@@ -46,7 +46,7 @@ namespace GravityZero.Hunting.Service.Controllers
             return new JsonResult(ServiceResponse<IEnumerable<RoleServiceModel>>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code)); 
         }
 
-        [HttpPost]
+        [HttpPut]
         public JsonResult UpdateRole([FromBody] RoleServiceModel role)
         {
             var queryResult = configuration.UpdateRole(role);
