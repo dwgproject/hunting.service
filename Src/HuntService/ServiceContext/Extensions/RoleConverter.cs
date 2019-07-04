@@ -13,6 +13,9 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
         }
 
         public static RoleServiceModel ConvertToServiceRole(this RoleServiceModel role, Role model){
+            if(model is null){
+                return new RoleServiceModel();
+            }
             role.Identifier = model.Identifier;
             role.Name = model.Name;
             return role;
