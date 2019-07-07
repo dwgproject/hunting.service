@@ -34,7 +34,7 @@ namespace GravityZero.HuntingSupport.Service.Context
             if (!result.IsSuccess)
                 return ServiceResult<string>.Failed(string.Empty, string.Empty);//kod od repo
                 
-            return ServiceResult<string>.Success(string.Empty, string.Empty);//kod z repo o dodaniu użytkownika
+            return ServiceResult<string>.Success("success", string.Empty);//kod z repo o dodaniu użytkownika
         }
 
         public ServiceResult<IEnumerable<UserServiceModel>> All()
@@ -71,6 +71,24 @@ namespace GravityZero.HuntingSupport.Service.Context
             return updateResult.IsSuccess ? 
                         ServiceResult<FullUser>.Success(updateResult.Payload.ConverToFullUser(), updateResult.Code) : 
                             ServiceResult<FullUser>.Failed(null, updateResult.Code);
+        }
+
+        public ServiceResult<IEnumerable<UserServiceModel>> GetByLogin(FullUser user)
+        {
+            RepositoryResult<IEnumerable<User>> getByLoginResult = userRepository.Query(l=>l.Login == user.Login);
+            // if(!getByLoginResult.IsSuccess)
+            //     return ServiceResult<IEnumerable<UserServiceModel>>.Failed(null, getByLoginResult.Code);
+            // if(!getByLoginResult.Payload.Any())
+            //     return ServiceResult<IEnumerable<UserServiceModel>>.Failed(null,"The payload from request is empty");
+
+            if(getByLoginResult.IsSuccess){
+                IList<UserServiceModel> usersList = new List<UserServiceModel>();
+                foreach(var item in getByLoginResult.Payload){
+                    usersList.Add(item.ConverToUserService());
+                }
+                return ServiceResult<IEnumerable<UserServiceModel>>.Success(usersList,getByLoginResult.Code);
+            }
+            return ServiceResult<IEnumerable<UserServiceModel>>.Failed(null,getByLoginResult.Code);
         }
     }
 }
