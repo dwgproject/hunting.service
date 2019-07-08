@@ -73,9 +73,9 @@ namespace GravityZero.HuntingSupport.Service.Context
                             ServiceResult<FullUser>.Failed(null, updateResult.Code);
         }
 
-        public ServiceResult<IEnumerable<UserServiceModel>> GetByLogin(FullUser user)
+        public ServiceResult<IEnumerable<UserServiceModel>> GetByLogin(string login)
         {
-            RepositoryResult<IEnumerable<User>> getByLoginResult = userRepository.Query(l=>l.Login == user.Login);
+            RepositoryResult<IEnumerable<User>> getByLoginResult = userRepository.Query(l=>l.Login == login);
             // if(!getByLoginResult.IsSuccess)
             //     return ServiceResult<IEnumerable<UserServiceModel>>.Failed(null, getByLoginResult.Code);
             // if(!getByLoginResult.Payload.Any())

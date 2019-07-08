@@ -64,10 +64,10 @@ namespace GravityZero.Hunting.Service.Controllers
             return new JsonResult(ServiceResponse<string>.Create(deleteResult.IsSuccess, deleteResult.Payload, deleteResult.Code));
         }
 
-        [HttpPost]
-        public JsonResult GetByLogin([FromBody]FullUser user)
+        [HttpGet]
+        public JsonResult GetByLogin(string id)
         {
-            var getByLoginResult = userService.GetByLogin(user);
+            var getByLoginResult = userService.GetByLogin(id);
             return new JsonResult(ServiceResponse<IEnumerable<UserServiceModel>>.Create(getByLoginResult.IsSuccess, getByLoginResult.Payload, getByLoginResult.Code));
         }
 

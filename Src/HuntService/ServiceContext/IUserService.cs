@@ -11,6 +11,6 @@ namespace GravityZero.HuntingSupport.Service.Context
         ServiceResult<string> Delete(Guid identifier);
         ServiceResult<UserServiceModel> Get(Guid identifer);
         ServiceResult<FullUser> Update(FullUser user);
-        ServiceResult<IEnumerable<UserServiceModel>> GetByLogin(FullUser user);
+        ServiceResult<IEnumerable<UserServiceModel>> GetByLogin(string login);
     }
 }
