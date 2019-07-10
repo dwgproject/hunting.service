@@ -12,9 +12,11 @@ namespace GravityZero.HuntingSupport.Service.Context
     public class ConfigurationService : IConfigurationService
     {
         private readonly IRoleRepository roleRepository;
-        public ConfigurationService(IRoleRepository roleRepository)
+        private readonly IAnimalRepository animalRepository;
+        public ConfigurationService(IRoleRepository roleRepository, IAnimalRepository animalRepository)
         {
             this.roleRepository = roleRepository;
+            this.animalRepository = animalRepository;
         }
 
         public ServiceResult<string> AddRole(RoleServiceModel role)
@@ -62,6 +64,52 @@ namespace GravityZero.HuntingSupport.Service.Context
         {
             var updateResult = roleRepository.Update(role.ConvertToModel());
             return updateResult.IsSuccess ? ServiceResult<string>.Success("success - update","") : ServiceResult<string>.Failed(string.Empty,"");
+        }
+
+        public ServiceResult<string> AddAnimal(AnimalServiceModel animal)
+        {
+            var addResult = animalRepository.Add(animal.ConvertToModel());
+            return addResult.IsSuccess ? ServiceResult<string>.Success("success - add","") : ServiceResult<string>.Failed(string.Empty,"");
+        }
+
+        public ServiceResult<string> DeleteAnimal(Guid identifier)
+        {
+            var deleteResult = animalRepository.Delete(identifier);
+            return deleteResult.IsSuccess ? ServiceResult<string>.Success("success - delete", "") : ServiceResult<string>.Failed(string.Empty,"");
+        }
+
+        public ServiceResult<IEnumerable<AnimalServiceModel>> GetAnimals()
+        {
+            var queryResult = animalRepository.Query(ar=>{return true;});
+            if(queryResult.IsSuccess){
+                ICollection<AnimalServiceModel> animals = new Collection<AnimalServiceModel>();
+                foreach (var item in queryResult.Payload)
+                {
+                    animals.Add(item.ConvertToServiceAnimal());
+                }
+                return ServiceResult<IEnumerable<AnimalServiceModel>>.Success(animals,"");
+            }
+            return ServiceResult<IEnumerable<AnimalServiceModel>>.Failed(Enumerable.Empty<AnimalServiceModel>(),"");
+        }
+
+        public ServiceResult<IEnumerable<AnimalServiceModel>> GetAnimal(string name)
+        {
+            var queryResult = animalRepository.Query(ar=>ar.Name == name);
+            if(queryResult.IsSuccess){
+                ICollection<AnimalServiceModel> animals = new Collection<AnimalServiceModel>();
+                foreach (var item in queryResult.Payload)
+                {
+                    animals.Add(item.ConvertToServiceAnimal());
+                }
+                return ServiceResult<IEnumerable<AnimalServiceModel>>.Success(animals,"");
+            }
+            return ServiceResult<IEnumerable<AnimalServiceModel>>.Failed(Enumerable.Empty<AnimalServiceModel>(),"");
+        }
+
+        public ServiceResult<string> UpdateAnimal(AnimalServiceModel animal)
+        {
+            var updateResult = animalRepository.Update(animal.ConvertToModel());
+            return updateResult.IsSuccess ? ServiceResult<string>.Success("Success - update","") : ServiceResult<string>.Failed(string.Empty, "");
         }
     }
 }
