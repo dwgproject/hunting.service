@@ -58,10 +58,24 @@ namespace GravityZero.Hunting.Service.Controllers
         }
 
         [HttpDelete]
-        public JsonResult Delete(Guid identifier)
+        public JsonResult Delete(Guid id)
         {
-            ServiceResult<string> deleteResult = userService.Delete(identifier);
+            ServiceResult<string> deleteResult = userService.Delete(id);
             return new JsonResult(ServiceResponse<string>.Create(deleteResult.IsSuccess, deleteResult.Payload, deleteResult.Code));
+        }
+
+        [HttpGet]
+        public JsonResult GetByLogin(string id)
+        {
+            var getByLoginResult = userService.GetByLogin(id);
+            return new JsonResult(ServiceResponse<IEnumerable<UserServiceModel>>.Create(getByLoginResult.IsSuccess, getByLoginResult.Payload, getByLoginResult.Code));
+        }
+
+        [HttpPut]
+        public JsonResult Update([FromBody] FullUser user)
+        {
+            var updateResult = userService.Update(user);
+            return new JsonResult(ServiceResponse<UserServiceModel>.Create(updateResult.IsSuccess, updateResult.Payload, updateResult.Code));
         }
     }
 }

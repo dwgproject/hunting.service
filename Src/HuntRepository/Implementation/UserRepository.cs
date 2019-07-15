@@ -67,7 +67,7 @@ namespace GravityZero.HuntingSupport.Repository
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Usunięto usera: {identidier}");
-                    return new RepositoryResult<string>(true,"",TAG+"05");
+                    return new RepositoryResult<string>(true,"Success",TAG+"05");
                 }
                 catch(Exception ex){
                     log.Error($"Nie udało się usunać usera: {identidier},{ex} ");

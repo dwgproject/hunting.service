@@ -10,5 +10,10 @@ namespace GravityZero.HuntingSupport.Service.Context
         ServiceResult<string> DeleteRole(Guid identifier);
         ServiceResult<IEnumerable<RoleServiceModel>> GetRole(string name);
         ServiceResult<string> UpdateRole(RoleServiceModel role);
+        ServiceResult<string> AddAnimal(AnimalServiceModel animal);
+        ServiceResult<string> DeleteAnimal(Guid identifier);
+        ServiceResult<IEnumerable<AnimalServiceModel>> GetAnimals();
+        ServiceResult<IEnumerable<AnimalServiceModel>> GetAnimal(string name);
+        ServiceResult<string> UpdateAnimal(AnimalServiceModel animal);
     }
 }
