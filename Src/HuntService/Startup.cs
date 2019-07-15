@@ -29,10 +29,13 @@ namespace GravityZero.HuntingSupport.Service.Main
             services.AddTransient<IServiceContext, ServiceContext>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IRoleRepository, RoleRepository>();
+            services.AddTransient<IHuntingRepository, HuntingRepository>();
             services.AddTransient<IConfigurationService, ConfigurationService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRepository, GravityZero.HuntingSupport.Repository.Repository>();
             services.AddTransient<IAnimalRepository, AnimalRepository>();
+            services.AddTransient<IQuarryRepository, QuarryRepository>();
+            services.AddTransient<IHuntingService, HuntingService>();
             services.AddMvc(options => {
                 options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);            

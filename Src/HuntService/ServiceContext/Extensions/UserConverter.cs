@@ -38,5 +38,17 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
                 Password = model.Password,
             };
         }
+
+        public static User ConvertToUserModel(this UserServiceModel model){
+            if(model is null)
+                return new User();
+            return new User(){
+                Login = model.Login,
+                Name = model.Name,
+                Surname = model.Surname,
+                Email = model.Email,
+                Identifier = model.Identifier                
+            };           
+        }       
     }
 }
