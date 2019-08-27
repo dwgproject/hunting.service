@@ -77,5 +77,12 @@ namespace GravityZero.Hunting.Service.Controllers
             var updateResult = userService.Update(user);
             return new JsonResult(ServiceResponse<UserServiceModel>.Create(updateResult.IsSuccess, updateResult.Payload, updateResult.Code));
         }
+
+        [HttpGet]
+        public JsonResult KeepAlive(Guid identifier)
+        {
+            bool checkSessionResult = serviceContext.CheckSession(identifier);
+            return new JsonResult(ServiceResponse<Guid>.Create(checkSessionResult, identifier, "US01"));
+        }
     }
 }

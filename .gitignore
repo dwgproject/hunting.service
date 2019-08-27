@@ -1,5 +1,7 @@
+Release/
 Debug/
 obj/
+bin/
 Migrations/
 *.json
 .vs
