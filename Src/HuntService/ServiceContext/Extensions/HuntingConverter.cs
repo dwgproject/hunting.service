@@ -24,5 +24,37 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
                     PartialHuntings = model.PartialHuntings.ConvertCollectionToModel()
             };           
         }
+
+        public static HuntingServiceModel ConvertToService(this Repository.Model.Hunting hunting)
+        {
+            if(hunting is null)
+                return new HuntingServiceModel();
+            return new HuntingServiceModel(){
+              Identifier = hunting.Identifier,
+              Issued = hunting.Issued,
+              Description = hunting.Description,
+              Leader = new UserServiceModel().ConvertToservice(hunting.Leader),
+              Status = (StatusServiceModel)hunting.Status,
+              Quarries = new List<QuarryServiceModel>().ConvertCollectionToService(hunting.Quarries),
+              Users = new List<UserHuntingServiceModel>().ConvertCollectionToService(hunting.Users),
+              PartialHuntings = new List<PartialHuntingServiceModel>().ConvertCollectionToService(hunting.PartialHuntings)
+            };
+        }
+
+        public static HuntingServiceModel ConvertToService(this HuntingServiceModel model, GravityZero.HuntingSupport.Repository.Model.Hunting hunting)
+        {
+            if(hunting is null)
+                return new HuntingServiceModel();
+            return new HuntingServiceModel(){
+              Identifier = hunting.Identifier,
+              Issued = hunting.Issued,
+              Description = hunting.Description,
+              Leader = new UserServiceModel().ConvertToservice(hunting.Leader),
+              Status = (StatusServiceModel)hunting.Status,
+              Quarries = new List<QuarryServiceModel>().ConvertCollectionToService(hunting.Quarries),
+              Users = new List<UserHuntingServiceModel>().ConvertCollectionToService(hunting.Users),
+              PartialHuntings = new List<PartialHuntingServiceModel>().ConvertCollectionToService(hunting.PartialHuntings)
+            };
+        }
     }
 }

@@ -17,6 +17,17 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
             };
         }
 
+        public static QuarryServiceModel ConvertToService(this Quarry model)
+        {
+            if(model is null)
+                return new QuarryServiceModel();
+            return new QuarryServiceModel(){
+                Identifier = model.Identifier,
+                Amount = model.Amount,
+                Animal = new AnimalServiceModel().ConvertToServiceAnimal(model.Animal)
+            };
+        }
+
         public static ICollection<Quarry> CovertCollectionToModel(this ICollection<QuarryServiceModel> model)
         {
             if(model is null){
@@ -28,6 +39,17 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
                 quarries.Add(item.ConvertToModel());                
             }
             return quarries;
+        }
+
+        public static ICollection<QuarryServiceModel> ConvertCollectionToService(this ICollection<QuarryServiceModel> quarries, ICollection<Quarry> model)
+        {
+            if(model is null)
+                return new List<QuarryServiceModel>();
+            List<QuarryServiceModel> list = new List<QuarryServiceModel>();
+            foreach(var item in model){
+                list.Add(item.ConvertToService());
+            }  
+            return list;
         }
     }
 }

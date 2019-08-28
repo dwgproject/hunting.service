@@ -28,5 +28,27 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
                 //User = model.User.ConvertToUserModel(),
             };
         }
+
+        public static UserHuntingServiceModel ConvertToService(this UserHunting model)
+        {
+            if(model is null)
+                return new UserHuntingServiceModel();
+            return new UserHuntingServiceModel(){
+                HuntingId = model.HuntingId,
+                UserId = model.UserId,
+                User = model.User.ConverToUserService()
+            };
+        }
+
+        public static ICollection<UserHuntingServiceModel> ConvertCollectionToService(this ICollection<UserHuntingServiceModel> userHunting,ICollection<UserHunting> model)
+        {
+            if(model is null)
+                return new List<UserHuntingServiceModel>();
+            var list = new List<UserHuntingServiceModel>();
+            foreach (var item in model){
+                list.Add(item.ConvertToService());               
+            }
+            return list;
+        }
     }
 }

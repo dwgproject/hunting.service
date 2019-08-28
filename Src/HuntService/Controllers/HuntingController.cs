@@ -28,14 +28,14 @@ namespace GravityZero.Hunting.Service.Controllers
         public JsonResult GetQuarries()
         {
             var queryResult = hunting.GetQuarries();
-            return new JsonResult(ServiceResponse<IEnumerable<Quarry>>.Create(queryResult.IsSuccess,queryResult.Payload,queryResult.Code));
+            return new JsonResult(ServiceResponse<IEnumerable<QuarryServiceModel>>.Create(queryResult.IsSuccess,queryResult.Payload,queryResult.Code));
         }
 
         [HttpGet]
         public JsonResult GetQuarry(Guid id)
         {
             var queryResult = hunting.GetQuarry(id);
-            return new JsonResult(ServiceResponse<IEnumerable<Quarry>>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
+            return new JsonResult(ServiceResponse<IEnumerable<QuarryServiceModel>>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
         }
 
         [HttpDelete]
@@ -57,6 +57,27 @@ namespace GravityZero.Hunting.Service.Controllers
         {
             var addResult = hunting.AddHunting(hunt);
             return new JsonResult(ServiceResponse<string>.Create(addResult.IsSuccess, addResult.Payload, addResult.Code));
+        }
+
+        [HttpGet]
+        public JsonResult GetHuntings()
+        {
+            var queryResult = hunting.GetHuntings();
+            return new JsonResult(ServiceResponse<IEnumerable<HuntingServiceModel>>.Create(queryResult.IsSuccess,queryResult.Payload,queryResult.Code));
+        }
+
+        [HttpGet]
+        public JsonResult GetHunting(Guid id)
+        {
+            var queryResult = hunting.GetHunting(id);
+            return new JsonResult(ServiceResponse<IEnumerable<HuntingServiceModel>>.Create(queryResult.IsSuccess, queryResult.Payload, queryResult.Code));
+        }
+
+        [HttpPut]
+        public JsonResult UpdateHunting([FromBody] HuntingServiceModel hunt)
+        {
+            var updateResult = hunting.UpdateHunting(hunt);
+            return new JsonResult(String.Empty);
         }
     }
 }

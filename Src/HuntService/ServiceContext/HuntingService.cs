@@ -23,17 +23,27 @@ namespace GravityZero.HuntingSupport.Service.Context
             return addResult.IsSuccess ? ServiceResult<string>.Success("Success - add","") : ServiceResult<string>.Failed(string.Empty,"");
         }
 
-        public ServiceResult<IEnumerable<Quarry>> GetQuarries()
+        public ServiceResult<IEnumerable<QuarryServiceModel>> GetQuarries()
         {
             var queryResult = quarryRepository.Query(qr=>{return true;});
-            return queryResult.IsSuccess ? ServiceResult<IEnumerable<Quarry>>.Success(queryResult.Payload,"") : 
-                                    ServiceResult<IEnumerable<Quarry>>.Failed(Enumerable.Empty<Quarry>(),"");
+            var list = new List<QuarryServiceModel>();
+            foreach (var item in queryResult.Payload)
+            {
+                list.Add(item.ConvertToService());
+            }
+            return queryResult.IsSuccess ? ServiceResult<IEnumerable<QuarryServiceModel>>.Success(list,"") : 
+                                    ServiceResult<IEnumerable<QuarryServiceModel>>.Failed(Enumerable.Empty<QuarryServiceModel>(),"");
         }
         
-        public ServiceResult<IEnumerable<Quarry>> GetQuarry(Guid id)
+        public ServiceResult<IEnumerable<QuarryServiceModel>> GetQuarry(Guid id)
         {
             var quaryResult = quarryRepository.Query(qr=>qr.Identifier == id);
-            return quaryResult.IsSuccess ? ServiceResult<IEnumerable<Quarry>>.Success(quaryResult.Payload,"") : ServiceResult<IEnumerable<Quarry>>.Failed(Enumerable.Empty<Quarry>(),"");
+            var list = new List<QuarryServiceModel>();
+            foreach (var item in quaryResult.Payload)
+            {
+                list.Add(item.ConvertToService());
+            }
+            return quaryResult.IsSuccess ? ServiceResult<IEnumerable<QuarryServiceModel>>.Success(list,"") : ServiceResult<IEnumerable<QuarryServiceModel>>.Failed(Enumerable.Empty<QuarryServiceModel>(),"");
         }
 
         public ServiceResult<string> DeleteQuarry(Guid id)
@@ -53,6 +63,34 @@ namespace GravityZero.HuntingSupport.Service.Context
         {
             var addResult = huntingRepository.Add(hunting.ConvertToModel());
             return addResult.IsSuccess ? ServiceResult<string>.Success("Success - add", "") : ServiceResult<string>.Failed(string.Empty, "");
+        }
+
+        public ServiceResult<IEnumerable<HuntingServiceModel>> GetHuntings()
+        {
+            var getResult = huntingRepository.Query(qr =>{return true;});
+            List<HuntingServiceModel> result = new List<HuntingServiceModel>();
+            foreach (var item in getResult.Payload)
+            {
+                result.Add(item.ConvertToService());
+            }
+            return getResult.IsSuccess ? ServiceResult<IEnumerable<HuntingServiceModel>>.Success(result,"") :
+                                            ServiceResult<IEnumerable<HuntingServiceModel>>.Failed(Enumerable.Empty<HuntingServiceModel>(),"");
+        }
+
+        public ServiceResult<string> UpdateHunting(HuntingServiceModel hunting)
+        {
+            var updateResult = huntingRepository.Update(hunting.ConvertToModel());
+            return updateResult.IsSuccess ? ServiceResult<string>.Success("Success - update", "") : ServiceResult<string>.Failed(string.Empty,"");
+        }
+
+        public ServiceResult<IEnumerable<HuntingServiceModel>> GetHunting(Guid id)
+        {
+            var queryResult = huntingRepository.Query(i=>i.Identifier == id);
+            IList<HuntingServiceModel> result = new List<HuntingServiceModel>();
+            foreach(var item in queryResult.Payload){
+                result.Add(item.ConvertToService());
+            }
+            return queryResult.IsSuccess ? ServiceResult<IEnumerable<HuntingServiceModel>>.Success(result,"") : ServiceResult<IEnumerable<HuntingServiceModel>>.Failed(Enumerable.Empty<HuntingServiceModel>(),"");
         }
     }
 }

@@ -25,5 +25,14 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
                 Name = animal.Name
             };
         }
+        public static AnimalServiceModel ConvertToServiceAnimal(this AnimalServiceModel animal, Animal model)
+        {
+            if(model is null)
+                return new AnimalServiceModel();
+            return new AnimalServiceModel(){
+                Identifier = model.Identifier,
+                Name = model.Name 
+            };
+        }
     }
 }

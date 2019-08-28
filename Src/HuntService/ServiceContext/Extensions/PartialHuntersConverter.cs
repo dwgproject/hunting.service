@@ -17,6 +17,17 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
             };
         }
 
+        public static PartialHuntersServiceModel ConvertToService(this PartialHuntersList model)
+        {
+            if(model is null)
+                return new PartialHuntersServiceModel();
+            return new PartialHuntersServiceModel(){
+                Identifier = model.Identifier,
+                HunterNumber = model.HunterNumber,
+                User = new User().ConverToUserService()
+            };
+        }
+
         public static ICollection<PartialHuntersList> ConvertCollectionToModel(this ICollection<PartialHuntersServiceModel> model)
         {
             if(model is null)
@@ -25,6 +36,20 @@ namespace GravityZero.HuntingSupport.Service.Context.Extensions
             foreach (var item in model){
                 list.Add(item.ConvertToModel());
             }
+            return list;
+        }
+
+        public static ICollection<PartialHuntersServiceModel> ConvertCollectionToService(this ICollection<PartialHuntersServiceModel> partialHunters, ICollection<PartialHuntersList> model)
+        {
+            if(model is null)
+                return new List<PartialHuntersServiceModel>();
+            var list = new List<PartialHuntersServiceModel>();
+
+            foreach (var item in model)
+            {
+                list.Add(item.ConvertToService());
+            }
+
             return list;
         }
     }
