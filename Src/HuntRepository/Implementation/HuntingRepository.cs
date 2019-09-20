@@ -164,12 +164,19 @@ namespace GravityZero.HuntingSupport.Repository
         {
             //var result = new RepositoryResult<Hunting>(false, null,TAG);
             var tmpHunting = context.Huntings.Find(hunting.Identifier);
+            
             if(tmpHunting!=null && tmpHunting.Status!=Status.Finish)
             {
                 IDbContextTransaction tx = null;
                 try{
                     tx = context.Database.BeginTransaction();
-                    tmpHunting.Leader = hunting.Leader;
+                    tmpHunting.Leader = context.Users.FirstOrDefault(i=>i.Identifier == hunting.Leader.Identifier);
+                    foreach (var item in tmpHunting.Users)
+                    {
+                        context.UsersHuntings.Remove(item);
+                    }
+                    tmpHunting.Users = hunting.Users;
+                    tmpHunting.Description = hunting.Description;                 
                     context.SaveChanges();
                     tx.Commit();
                     log.Info($"Zaktualizowano polowanie {hunting}");

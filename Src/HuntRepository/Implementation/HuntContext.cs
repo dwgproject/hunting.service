@@ -37,6 +37,7 @@ namespace GravityZero.HuntingSupport.Repository
         public DbSet<Quarry> Quarries { get; set; }
         public DbSet<PartialHunting> PartialHuntings {get;set;}
         public DbSet<PartialHuntersList> PartialHunters { get; set; }
+        public DbSet<UserHunting> UsersHuntings { get; set; }
 
     }
 }
